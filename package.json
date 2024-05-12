@@ -1,0 +1,12 @@
+{
+  "type": "module",
+  "name": "pocker",
+  "version": "1.0.0",
+  "description": "Poker Game",
+  "main": "game.js",
+  "scripts": {
+    "start": "node game.js"
+  },
+  "author": "Crosshell",
+  "private": true
+}
