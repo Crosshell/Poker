@@ -8,7 +8,7 @@ export class Deck {
     generate(){
         for (const rank of RANKS) {
             for (const suit of SUITS) {
-                let card = new Card(rank, suit);
+                const card = new Card(rank, suit);
                 this.deck.push(card);
             }
         }
