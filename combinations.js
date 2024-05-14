@@ -9,12 +9,14 @@ const checkRoyalFlush = (straightCards) => {
     }
     return null;
 }
+
 const checkStraightFlush = (straightCards) => {
     if (straightCards && isSameSuit(straightCards)) {
         return {name: 'Straight flush', cards: straightCards};
     }
     return null;
 }
+
 const checkFourKind = (cards, ranksCount) => {
     for (const rank in ranksCount){
         if (ranksCount[rank] === 4){
@@ -25,6 +27,7 @@ const checkFourKind = (cards, ranksCount) => {
     }
     return null;
 }
+
 const checkFullHouse = (cards, tripleCards, doubleCards) => {
     if (tripleCards && doubleCards) {
         const tripleCardsArray = cards.filter(card => card.rank === tripleCards);
@@ -33,6 +36,7 @@ const checkFullHouse = (cards, tripleCards, doubleCards) => {
     }
     return null;
 }
+
 const checkFlush = (cards, suitsCount) => {
     for (const suit in suitsCount) {
         if (suitsCount[suit] >= MAX_COMBINATION_SIZE) {
@@ -43,12 +47,14 @@ const checkFlush = (cards, suitsCount) => {
     }
     return null;
 }
+
 const checkStraight = (straightCards) => {
     if (straightCards && straightCards.length === MAX_COMBINATION_SIZE){
         return {name: 'Straight', cards: straightCards};
     }
     return null;
 }
+
 const checkThreeKind = (cards, tripleCards) => {
     if (tripleCards) {
         const tripleCardsArray = cards.filter(card => card.rank === tripleCards);
@@ -56,6 +62,7 @@ const checkThreeKind = (cards, tripleCards) => {
     }
     return null;
 }
+
 const checkTwoPair = (cards, doubleCards, prevDoubleCards) => {
     if (prevDoubleCards !== doubleCards && prevDoubleCards && doubleCards) {
         const doubleCardsArray = cards.filter(card => card.rank === doubleCards);
@@ -64,6 +71,7 @@ const checkTwoPair = (cards, doubleCards, prevDoubleCards) => {
     }
     return null;
 }
+
 const checkPair = (cards, doubleCards) => {
     if (doubleCards) {
         const doubleCardsArray = cards.filter(card => card.rank === doubleCards);
@@ -71,9 +79,11 @@ const checkPair = (cards, doubleCards) => {
     }
     return null;
 }
+
 const getSortedByRanks = (cardsToSort) => {
     return cardsToSort.sort((a, b) => RANKS.indexOf(a.rank) - RANKS.indexOf(b.rank));
 }
+
 const getUniqueRanks = (sortedRanks) => {
     const uniqueRanks = {};
     return sortedRanks.filter(card => {
@@ -84,6 +94,7 @@ const getUniqueRanks = (sortedRanks) => {
         return false;
     });
 }
+
 const getStraightCards = (uniqueRanksArray) => {
     if (uniqueRanksArray.length >= MAX_COMBINATION_SIZE) {
         let consecutiveCount = 1;
@@ -95,7 +106,7 @@ const getStraightCards = (uniqueRanksArray) => {
                 consecutiveCount++;
                 chainCards.unshift(uniqueRanksArray[i]);
                 if (consecutiveCount === MAX_COMBINATION_SIZE) {
-                    return [...chainCards];
+                    return chainCards;
                 }
             } else {
                 consecutiveCount = 1;
@@ -117,6 +128,7 @@ const isSameSuit = (straightCards) => {
     }
     return false;
 }
+
 const getTripleCards = (ranksCount) => {
     let tripleCards = null;
     for (const rank in ranksCount) {
@@ -125,8 +137,8 @@ const getTripleCards = (ranksCount) => {
         }
     }
     return tripleCards;
-
 }
+
 const getDoubleCards = (ranksCount) => {
     let doubleCards = null;
     for (const rank in ranksCount) {
@@ -136,6 +148,7 @@ const getDoubleCards = (ranksCount) => {
     }
     return doubleCards;
 }
+
 const getPrevDoubleCards = (ranksCount) => {
     let curDoubleCards = null;
     let prevDoubleCards = null;
@@ -147,6 +160,7 @@ const getPrevDoubleCards = (ranksCount) => {
     }
     return prevDoubleCards;
 }
+
 export const checkHighestCombination = (user, table) => {
     let cards = [...table, ...user];
     cards = getSortedByRanks(cards);
