@@ -1,0 +1,73 @@
+#rules {
+    display: block;
+    padding-top: 30px;
+}
+#connect {
+    display: block;
+    margin-top: 40px;
+}
+#connectingMessage {
+    display: none;
+    margin-top: 10px;
+}
+#gameArea {
+    display: none;
+}
+#enemyCards, #tableCards {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    padding-top: 20px;
+}
+#firstEnemyCard, #secondEnemyCard {
+    height: 7%;
+    width: 7%;
+}
+#flopCard1, #flopCard2, #flopCard3, #turnCard, #riverCard {
+    height: 7%;
+    width: 7%;
+}
+#userCards {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    padding-top: 20px;
+}
+#firstUserCard, #secondUserCard {
+    height: 11%;
+    width: 11%;
+}
+#buttons {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    padding-top: 30px;
+}
+#enemyID {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 10px;
+}
+#userID {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 10px;
+}
+#userMoney, #enemyMoney {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#userBid, #enemyBid {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#call, #fold, #raise {
+
+}

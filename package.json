@@ -8,5 +8,8 @@
     "start": "node game.js"
   },
   "author": "Crosshell",
-  "private": true
+  "private": true,
+  "dependencies": {
+    "ws": "^8.17.0"
+  }
 }

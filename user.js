@@ -1,4 +1,4 @@
-import {MAX_HAND_SIZE, NUMBER_OF_PLAYERS, RANKS} from "./constants.js";
+import {MAX_HAND_SIZE, RANKS} from "./constants.js";
 import {checkHighestCombination} from "./combinations.js";
 
 class User {
@@ -23,9 +23,9 @@ class User {
     }
 }
 
-export const createUsers = (deck, tableCards) => {
+export const createUsers = (deck, tableCards, numOfPlayers) => {
     const users = {};
-    for (let i = 0; i < NUMBER_OF_PLAYERS; i++){
+    for (let i = 0; i < numOfPlayers; i++){
         const user = new User(tableCards);
         user.dealCards(deck);
         user.sortHandCards();
