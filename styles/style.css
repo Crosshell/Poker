@@ -1,73 +1,35 @@
-#rules {
-    display: block;
-    padding-top: 30px;
+#startScreen {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
 }
 #connect {
-    display: block;
-    margin-top: 40px;
+    margin-top: 50px;
 }
 #connectingMessage {
     display: none;
     margin-top: 10px;
 }
+#lobby {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+#lobby h1 {
+    text-align: center;
+}
+#lobby button {
+    margin-top: 10px;
+}
+#connectedUsers {
+    margin-top: 10px;
+}
+#lobby-User-1, #lobby-User-2, #lobby-User-3, #lobby-User-4, #lobby-User-5,
+#lobby-User-6, #lobby-User-7, #lobby-User-8, #lobby-User-9, #lobby-User-10 {
+    display: none;
+}
 #gameArea {
     display: none;
-}
-#enemyCards, #tableCards {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    padding-top: 20px;
-}
-#firstEnemyCard, #secondEnemyCard {
-    height: 7%;
-    width: 7%;
-}
-#flopCard1, #flopCard2, #flopCard3, #turnCard, #riverCard {
-    height: 7%;
-    width: 7%;
-}
-#userCards {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    padding-top: 20px;
-}
-#firstUserCard, #secondUserCard {
-    height: 11%;
-    width: 11%;
-}
-#buttons {
-    display: none;
-    justify-content: center;
-    align-items: center;
-    gap: 30px;
-    padding-top: 30px;
-}
-#enemyID {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding-bottom: 10px;
-}
-#userID {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding-top: 10px;
-}
-#userMoney, #enemyMoney {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-#userBid, #enemyBid {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-#call, #fold, #raise {
-
 }

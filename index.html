@@ -8,49 +8,29 @@
         <script type="module" src="game.js"></script>
     </head>
     <body>
-        <a id='rules' href="https://www.pokernews.com/poker-rules/texas-holdem.htm">How to play Poker</a>
-        <div>
-            <button id="connect">Connect</button>
+        <div id="startScreen">
+            <h1>START SCREEN</h1>
+            <a id='rules' href="https://www.pokernews.com/poker-rules/texas-holdem.htm">How to play Poker</a>
+            <div>
+                <button id="connect">Connect</button>
+            </div>
         </div>
         <div id="connectingMessage">Connecting...</div>
-        <div id="gameArea">
-            <div id="enemyID">
-
-            </div>
-            <div id="enemyMoney">
-
-            </div>
-            <div id="enemyBid">
-
-            </div>
-            <div id="enemyCards">
-                <img id='firstEnemyCard' src="images/cards/back-of-card.png" alt="firstEnemyCard">
-                <img id='secondEnemyCard' src="images/cards/back-of-card.png" alt="secondEnemyCard">
-            </div>
-            <div id="tableCards">
-                <img id='flopCard1' src="images/cards/back-of-card.png" alt="tableCard">
-                <img id='flopCard2' src="images/cards/back-of-card.png" alt="tableCard">
-                <img id='flopCard3' src="images/cards/back-of-card.png" alt="tableCard">
-                <img id='turnCard' src="images/cards/back-of-card.png" alt="tableCard">
-                <img id='riverCard' src="images/cards/back-of-card.png" alt="tableCard">
-            </div>
-            <div id="userCards">
-                <img id='firstUserCard' src="images/cards/back-of-card.png" alt="firstUserCard">
-                <img id='secondUserCard' src="images/cards/back-of-card.png" alt="secondUserCard">
-            </div>
-            <div id="userID">
-
-            </div>
-            <div id="userBid">
-
-            </div>
-            <div id="userMoney">
-
-            </div>
-            <div id="buttons">
-                <button id="call">Call</button>
-                <button id="fold">Fold</button>
-                <button id="raise">Raise</button>
+        <div id="lobby">
+            <h1>LOBBY</h1>
+            <button id="ready">READY!</button>
+            <h2>Connected Users:</h2>
+            <div id="connectedUsers">
+                <div id="lobby-User-1">User 1: Not Ready</div>
+                <div id="lobby-User-2">User 2: Not Ready</div>
+                <div id="lobby-User-3">User 3: Not Ready</div>
+                <div id="lobby-User-4">User 4: Not Ready</div>
+                <div id="lobby-User-5">User 5: Not Ready</div>
+                <div id="lobby-User-6">User 6: Not Ready</div>
+                <div id="lobby-User-7">User 7: Not Ready</div>
+                <div id="lobby-User-8">User 8: Not Ready</div>
+                <div id="lobby-User-9">User 9: Not Ready</div>
+                <div id="lobby-User-10">User 10: Not Ready</div>
             </div>
         </div>
     </body>
