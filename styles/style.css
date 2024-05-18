@@ -30,6 +30,98 @@
 #lobby-User-6, #lobby-User-7, #lobby-User-8, #lobby-User-9, #lobby-User-10 {
     display: none;
 }
-#gameArea {
+#usersArea {
     display: none;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 10px;
+    justify-items: center;
+    align-items: center;
+    width: 100%;
+    height: 100vh;
+    padding: 20px;
+}
+#usersArea > div {
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid #000;
+    padding: 10px;
+}
+#usersArea > div > div {
+    margin: 5px 0;
+}
+#game-User-1 {
+    display: none;
+    grid-area: 1 / 1 / 2 / 2;
+}
+#game-User-2 {
+    display: none;
+    grid-area: 1 / 2 / 2 / 3;
+}
+#game-User-3 {
+    display: none;
+    grid-area: 1 / 3 / 2 / 4;
+}
+#game-User-4 {
+    display: none;
+    grid-area: 1 / 4 / 2 / 5;
+}
+#game-User-5 {
+    display: none;
+    grid-area: 2 / 4 / 3 / 5;
+}
+#game-User-6 {
+    display: none;
+    grid-area: 3 / 4 / 4 / 5;
+}
+#game-User-7 {
+    display: none;
+    grid-area: 3 / 3 / 4 / 4;
+}
+#game-User-8 {
+    display: none;
+    grid-area: 3 / 2 / 4 / 3;
+}
+#game-User-9 {
+    display: none;
+    grid-area: 3 / 1 / 4 / 2;
+}
+#game-User-10 {
+    display: none;
+    grid-area: 2 / 1 / 3 / 2;
+}
+#controlPanel {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+}
+#table {
+    display: none;
+    padding-top: 20px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+#flopCard1, #flopCard2, #flopCard3, #turnCard, #riverCard {
+    height: 7%;
+    width: 7%;
+}
+#cards-User-1, #cards-User-2, #cards-User-3, #cards-User-4, #cards-User-5,
+#cards-User-6, #cards-User-7, #cards-User-8, #cards-User-9, #cards-User-10 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#first-card-User-1, #second-card-User-1, #first-card-User-2, #second-card-User-2,
+#first-card-User-3, #second-card-User-3, #first-card-User-4, #second-card-User-4,
+#first-card-User-5, #second-card-User-5, #first-card-User-6, #second-card-User-6,
+#first-card-User-7, #second-card-User-7, #first-card-User-8, #second-card-User-8,
+#first-card-User-9, #second-card-User-9, #first-card-User-10, #second-card-User-10 {
+    height: 20%;
+    width: 20%;
+}
+#dealer-User-1, #dealer-User-2, #dealer-User-3, #dealer-User-4, #dealer-User-5,
+#dealer-User-6, #dealer-User-7, #dealer-User-8, #dealer-User-9 {
+    color: red;
 }
