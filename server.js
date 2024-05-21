@@ -33,39 +33,8 @@ wss.on('connection', function connection(ws) {
         const parsedMessage = JSON.parse(message);
         const { type, content } = parsedMessage;
 
-        const userID = ws.userID;
+        handleMessage(type, content, ws.userID);
 
-        switch (type) {
-            case 'readiness':
-                users[userID].isReady = content;
-                const message = JSON.stringify({ type: 'updateReadiness', content: { isReady: content, userID: userID } });
-                broadcast(message);
-                if (Object.keys(users).length >= 2 && isAllReady()){
-                    startGame();
-                }
-                break;
-            case 'playerMove':
-                switch (currentStreet) {
-                    case 'PreFlop':
-                        preFlop(content.action, content.amount);
-                        break;
-                    case 'Flop':
-                        flop();
-                        break;
-                    case 'Turn':
-                        turn();
-                        break;
-                    case 'River':
-                        river();
-                        break;
-                    case 'Showdown':
-                        showdown();
-                        break;
-                }
-                break;
-            default:
-                console.warn('Unknown message type:', type);
-        }
         ws.on('error', function error(err) {
             console.error('WebSocket error:', err);
         });
@@ -73,6 +42,39 @@ wss.on('connection', function connection(ws) {
 
 });
 
+const handleMessage = (type, content, userID) => {
+    switch (type) {
+        case 'readiness':
+            users[userID].isReady = content;
+            const message = JSON.stringify({ type: 'updateReadiness', content: { isReady: content, userID: userID } });
+            broadcast(message);
+            if (Object.keys(users).length >= 2 && isAllReady()){
+                startGame();
+            }
+            break;
+        case 'playerMove':
+            switch (currentStreet) {
+                case 'PreFlop':
+                    preFlop(content.action, content.amount);
+                    break;
+                case 'Flop':
+                    flop();
+                    break;
+                case 'Turn':
+                    turn();
+                    break;
+                case 'River':
+                    river();
+                    break;
+                case 'Showdown':
+                    showdown();
+                    break;
+            }
+            break;
+        default:
+            console.warn('Unknown message type:', type);
+    }
+}
 const broadcast = (message) => {
     for (const userID in users) {
         users[userID].ws.send(message);
