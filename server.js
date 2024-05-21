@@ -75,6 +75,7 @@ const handleMessage = (type, content, userID) => {
             console.warn('Unknown message type:', type);
     }
 }
+
 const broadcast = (message) => {
     for (const userID in users) {
         users[userID].ws.send(message);
@@ -225,7 +226,10 @@ const preFlop = (action, amount) => {
         users[currentUserID].bid += amount;
         if (queue.length === 0) {
             const userKeys = Object.keys(users);
-            queue = userKeys.slice(currentUserID).concat(userKeys.slice(0, currentUserID));
+            queue = userKeys
+                .slice(currentUserID)
+                .concat(userKeys.slice(0, currentUserID))
+                .filter(userID => !users[userID].hasFolded);
         }
     } else {
         return;
