@@ -154,7 +154,7 @@ const getDealer = () => {
     const randomIndex = Math.floor(Math.random() * userKeys.length);
     const randomUserID = userKeys[randomIndex];
     users[randomUserID].isDealer = true;
-    const message = JSON.stringify({ type: 'getDealer', content: parseInt(randomUserID) });
+    const message = JSON.stringify({ type: 'getDealer', content: randomUserID });
     broadcast(message)
 }
 
@@ -188,40 +188,42 @@ const doBlinds = () => {
 
 const preFlop = (action, amount) => {
 
-    const currentUserId = queue.shift();
+    const currentUserID = queue.shift();
 
     if (action === 'fold') {
-        users[currentUserId].hasFolded = true;
+        users[currentUserID].hasFolded = true;
+        const message = JSON.stringify({ type: 'foldedUser', content: currentUserID });
+        broadcast(message);
     } else if (action === 'call') {
-        const callAmount = highestBid - users[currentUserId].bid;
-        if (users[currentUserId].money - callAmount < 0) {
-            users[currentUserId].bid = users[currentUserId].money + users[currentUserId].bid;
-            users[currentUserId].money = 0;
+        const callAmount = highestBid - users[currentUserID].bid;
+        if (users[currentUserID].money - callAmount < 0) {
+            users[currentUserID].bid = users[currentUserID].money + users[currentUserID].bid;
+            users[currentUserID].money = 0;
         } else {
-            users[currentUserId].money -= callAmount;
-            users[currentUserId].bid += callAmount;
+            users[currentUserID].money -= callAmount;
+            users[currentUserID].bid += callAmount;
         }
 
     } else if (action === 'bet') {
-        if (users[currentUserId].money < amount){
+        if (users[currentUserID].money < amount){
             const message = JSON.stringify({ type: 'betError', content: 'The bet must be less than the amount of your money' });
-            users[currentUserId].ws.send(message);
-            queue.unshift(currentUserId);
+            users[currentUserID].ws.send(message);
+            queue.unshift(currentUserID);
             handlePlayerTurn();
             return;
-        } else if (amount + users[currentUserId].bid < highestBid) {
+        } else if (amount + users[currentUserID].bid < highestBid) {
             const message = JSON.stringify({ type: 'betError', content: 'The bid must be greater than the current highest bid' });
-            users[currentUserId].ws.send(message);
-            queue.unshift(currentUserId);
+            users[currentUserID].ws.send(message);
+            queue.unshift(currentUserID);
             handlePlayerTurn();
             return;
         }
         highestBid += amount;
-        users[currentUserId].money -= amount;
-        users[currentUserId].bid += amount;
+        users[currentUserID].money -= amount;
+        users[currentUserID].bid += amount;
         if (queue.length === 0) {
             const userKeys = Object.keys(users);
-            queue = userKeys.slice(currentUserId).concat(userKeys.slice(0, currentUserId));
+            queue = userKeys.slice(currentUserID).concat(userKeys.slice(0, currentUserID));
         }
     } else {
         return;

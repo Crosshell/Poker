@@ -99,6 +99,9 @@ const game = (socket, handCards) => {
             case 'betError':
                 alert(message.content);
                 break;
+            case 'foldedUser':
+                updateFoldedUsers(message.content);
+                break;
             case 'gameOver':
                 alert(`WINNER IS ${message.content.user} with ${message.content.combination}`);
                 break;
@@ -209,5 +212,10 @@ const makeMove = (socket, street) => {
     callButton.addEventListener('click', handleCall);
     foldButton.addEventListener('click', handleFold);
     betButton.addEventListener('click', handleBet);
+}
+const updateFoldedUsers = (foldedUserID) => {
+    alert(`User ${foldedUserID} has folded`);
+    const foldedUserElement = get('gameUser' + foldedUserID);
+    foldedUserElement.style.color = 'rgba(199,199,199,0.94)';
 }
 
