@@ -197,9 +197,22 @@ const preFlop = (action, amount) => {
         users[currentUserId].money -= callAmount;
         users[currentUserId].bid += callAmount;
     } else if (action === 'bet') {
+        if (users[currentUserId].money < amount){
+            const message = JSON.stringify({ type: 'betError', content: 'The bet must be less than the amount of your money' });
+            users[currentUserId].ws.send(message);
+            queue.unshift(currentUserId);
+            handlePlayerTurn();
+            return;
+        } else if (amount + users[currentUserId].bid < highestBid) {
+            const message = JSON.stringify({ type: 'betError', content: 'The bid must be greater than the current highest bid' });
+            users[currentUserId].ws.send(message);
+            queue.unshift(currentUserId);
+            handlePlayerTurn();
+            return;
+        }
         highestBid += amount;
-        users[currentUserId].money -= (highestBid - users[currentUserId].bid);
-        users[currentUserId].bid = highestBid;
+        users[currentUserId].money -= amount;
+        users[currentUserId].bid += amount;
         if (queue.length === 0) {
             const userKeys = Object.keys(users);
             queue = userKeys.slice(currentUserId).concat(userKeys.slice(0, currentUserId));

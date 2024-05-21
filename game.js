@@ -96,6 +96,9 @@ const game = (socket, handCards) => {
                 updateTurnUser(message.content.userID);
                 if (message.content.userID === yourID) makeMove(socket, message.content.street);
                 break;
+            case 'betError':
+                alert(message.content);
+                break;
             case 'gameOver':
                 alert(`WINNER IS ${message.content.user} with ${message.content.combination}`);
                 break;
@@ -193,6 +196,7 @@ const makeMove = (socket, street) => {
         }
         removeButtonListeners();
     }
+
     const removeButtonListeners = () => {
         checkButton.removeEventListener('click', handleCheck);
         callButton.removeEventListener('click', handleCall);
