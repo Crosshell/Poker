@@ -38,33 +38,7 @@ const connectToLobby = () => {
 
         socket.addEventListener('message', (event) => {
             const message = JSON.parse(event.data);
-            switch (message.type) {
-                case 'getID':
-                    yourID = message.content;
-                    break;
-                case 'newConnect':
-                    const connectedUsers = message.content;
-                    for (const userID of connectedUsers) {
-                        const connectedUserElement = get('lobbyUser' + userID);
-                        connectedUserElement.style.display = 'flex';
-                    }
-                    break;
-                case 'updateReadiness':
-                    const isUserReady = message.content.isReady;
-                    const userID = message.content.userID;
-                    const userLobbyElement = get('lobbyUser' + userID);
-                    const readiness = isUserReady ? 'Ready' : 'Not Ready';
-                    if (userID === yourID) {
-                        userLobbyElement.textContent = `User ${userID} (You): ${readiness}`;
-                    } else {
-                        userLobbyElement.textContent = `User ${userID}: ${readiness}`;
-                    }
-                    break;
-                case 'getHandCards':
-                    lobbyElement.style.display = 'none';
-                    game(socket, message.content);
-                    break;
-            }
+            lobbyServerHandler(socket, message);
         });
         readyButton.addEventListener('click', () => {
             isYouReady = !isYouReady;
@@ -73,40 +47,74 @@ const connectToLobby = () => {
     });
 }
 
+const lobbyServerHandler = (socket, message) => {
+    switch (message.type) {
+        case 'getID':
+            yourID = message.content;
+            break;
+        case 'newConnect':
+            const connectedUsers = message.content;
+            for (const userID of connectedUsers) {
+                const connectedUserElement = get('lobbyUser' + userID);
+                connectedUserElement.style.display = 'flex';
+            }
+            break;
+        case 'updateReadiness':
+            const isUserReady = message.content.isReady;
+            const userID = message.content.userID;
+            const userLobbyElement = get('lobbyUser' + userID);
+            const readiness = isUserReady ? 'Ready' : 'Not Ready';
+            if (userID === yourID) {
+                userLobbyElement.textContent = `User ${userID} (You): ${readiness}`;
+            } else {
+                userLobbyElement.textContent = `User ${userID}: ${readiness}`;
+            }
+            break;
+        case 'getHandCards':
+            lobbyElement.style.display = 'none';
+            game(socket, message.content);
+            break;
+    }
+}
+
 const game = (socket, handCards) => {
     usersArea.style.display = 'grid';
     tableElement.style.display = 'flex';
     socket.addEventListener('message', (event) => {
         const message = JSON.parse(event.data);
-        switch (message.type) {
-            case 'getPlayingUsers':
-                showPlayers(message.content);
-                showYourHandCards(handCards);
-                break;
-            case 'updateMoney':
-                updateUsersMoney(message.content);
-                break;
-            case 'updateBid':
-                updateUsersBid(message.content);
-                break;
-            case 'getDealer':
-                updateDealer(message.content);
-                break;
-            case 'turn':
-                updateTurnUser(message.content.userID);
-                if (message.content.userID === yourID) makeMove(socket, message.content.street);
-                break;
-            case 'betError':
-                alert(message.content);
-                break;
-            case 'foldedUser':
-                updateFoldedUsers(message.content);
-                break;
-            case 'gameOver':
-                alert(`WINNER IS ${message.content.user} with ${message.content.combination}`);
-                break;
-        }
+        gameServerHandler(socket, message, handCards);
     });
+}
+
+const gameServerHandler = (socket, message, handCards) => {
+    switch (message.type) {
+        case 'getPlayingUsers':
+            showPlayers(message.content);
+            showYourHandCards(handCards);
+            break;
+        case 'updateMoney':
+            updateUsersMoney(message.content);
+            break;
+        case 'updateBid':
+            updateUsersBid(message.content);
+            break;
+        case 'getDealer':
+            updateDealer(message.content);
+            break;
+        case 'turn':
+            updateTurnUser(message.content.userID);
+            if (message.content.userID === yourID) makeMove(socket, message.content.street);
+            break;
+        case 'betError':
+            alert(message.content);
+            break;
+        case 'foldedUser':
+            updateFoldedUsers(message.content);
+            break;
+        case 'gameOver':
+            alert(`WINNER IS ${message.content.user} with ${message.content.combination}`);
+            break;
+    }
 }
 
 const showPlayers = (usersToShow) => {
