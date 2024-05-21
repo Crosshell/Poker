@@ -1,6 +1,6 @@
 import {MAX_HAND_SIZE, RANKS} from "./constants.js";
 
-export const dealUserCard = (deck) => {
+export const dealUserCards = (deck) => {
     const cards = [];
     for (let i = 0; i < MAX_HAND_SIZE; i++) {
         const card = deck.deal();

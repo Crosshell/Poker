@@ -26,8 +26,8 @@
 #connectedUsers {
     margin-top: 10px;
 }
-#lobby-User-1, #lobby-User-2, #lobby-User-3, #lobby-User-4, #lobby-User-5,
-#lobby-User-6, #lobby-User-7, #lobby-User-8, #lobby-User-9, #lobby-User-10 {
+#lobbyUser1, #lobbyUser2, #lobbyUser3, #lobbyUser4, #lobbyUser5,
+#lobbyUser6, #lobbyUser7, #lobbyUser8, #lobbyUser9, #lobbyUser10 {
     display: none;
 }
 #usersArea {
@@ -50,43 +50,43 @@
 #usersArea > div > div {
     margin: 5px 0;
 }
-#game-User-1 {
+#gameUser1 {
     display: none;
     grid-area: 1 / 1 / 2 / 2;
 }
-#game-User-2 {
+#gameUser2 {
     display: none;
     grid-area: 1 / 2 / 2 / 3;
 }
-#game-User-3 {
+#gameUser3 {
     display: none;
     grid-area: 1 / 3 / 2 / 4;
 }
-#game-User-4 {
+#gameUser4 {
     display: none;
     grid-area: 1 / 4 / 2 / 5;
 }
-#game-User-5 {
+#gameUser5 {
     display: none;
     grid-area: 2 / 4 / 3 / 5;
 }
-#game-User-6 {
+#gameUser6 {
     display: none;
     grid-area: 3 / 4 / 4 / 5;
 }
-#game-User-7 {
+#gameUser7 {
     display: none;
     grid-area: 3 / 3 / 4 / 4;
 }
-#game-User-8 {
+#gameUser8 {
     display: none;
     grid-area: 3 / 2 / 4 / 3;
 }
-#game-User-9 {
+#gameUser9 {
     display: none;
     grid-area: 3 / 1 / 4 / 2;
 }
-#game-User-10 {
+#gameUser10 {
     display: none;
     grid-area: 2 / 1 / 3 / 2;
 }
@@ -107,21 +107,21 @@
     height: 7%;
     width: 7%;
 }
-#cards-User-1, #cards-User-2, #cards-User-3, #cards-User-4, #cards-User-5,
-#cards-User-6, #cards-User-7, #cards-User-8, #cards-User-9, #cards-User-10 {
+#cardsUser1, #cardsUser2, #cardsUser3, #cardsUser4, #cardsUser5,
+#cardsUser6, #cardsUser7, #cardsUser8, #cardsUser9, #cardsUser10 {
     display: flex;
     justify-content: center;
     align-items: center;
 }
-#first-card-User-1, #second-card-User-1, #first-card-User-2, #second-card-User-2,
-#first-card-User-3, #second-card-User-3, #first-card-User-4, #second-card-User-4,
-#first-card-User-5, #second-card-User-5, #first-card-User-6, #second-card-User-6,
-#first-card-User-7, #second-card-User-7, #first-card-User-8, #second-card-User-8,
-#first-card-User-9, #second-card-User-9, #first-card-User-10, #second-card-User-10 {
+#firstCardUser1, #secondCardUser1, #firstCardUser2, #secondCardUser2,
+#firstCardUser3, #secondCardUser3, #firstCardUser4, #secondCardUser4,
+#firstCardUser5, #secondCardUser5, #firstCardUser6, #secondCardUser6,
+#firstCardUser7, #secondCardUser7, #firstCardUser8, #secondCardUser8,
+#firstCardUser9, #secondCardUser9, #firstCardUser10, #secondCardUser10 {
     height: 20%;
     width: 20%;
 }
-#dealer-User-1, #dealer-User-2, #dealer-User-3, #dealer-User-4, #dealer-User-5,
-#dealer-User-6, #dealer-User-7, #dealer-User-8, #dealer-User-9 {
+#dealerUser1, #dealerUser2, #dealerUser3, #dealerUser4, #dealerUser5,
+#dealerUser6, #dealerUser7, #dealerUser8, #dealerUser9 {
     color: red;
 }
