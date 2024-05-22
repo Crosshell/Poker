@@ -15,14 +15,24 @@ let isGameStarted = false;
 let bank = 0;
 
 wss.on('connection', (ws) => {
-    const userCount = Object.keys(users).length + 1;
-    const userID = userCount;
+    const userID = getNextUserID();
 
-    if (handleConnectionError(ws, userCount)) {
+    if (handleConnectionError(ws, userID)) {
         return;
     }
 
-    users[userID] = { username: `User ${userID}`, isReady: false, ws: ws, cards: [], combination: null, money: START_MONEY, bid: 0, isDealer: false, hasFolded: false };
+    users[userID] = {
+        username: `User ${userID}`,
+        isReady: false,
+        ws: ws,
+        cards: [],
+        combination: null,
+        money: START_MONEY,
+        bid: 0,
+        isDealer: false,
+        hasFolded: false
+    };
+
     ws.userID = userID;
 
     ws.send(JSON.stringify({ type: 'getID', content: userID }));
@@ -42,10 +52,22 @@ wss.on('connection', (ws) => {
         });
     });
 
+    ws.on('close', () => {
+        removeConnection(ws);
+    });
 });
 
-const handleConnectionError = (ws, userCount) => {
-    if (userCount > MAX_PLAYERS) {
+const getNextUserID = () => {
+    for (let i = 1; i <= MAX_PLAYERS; i++) {
+        if (!users[i]) {
+            return i;
+        }
+    }
+    return null;
+}
+
+const handleConnectionError = (ws, userID) => {
+    if (userID === null) {
         ws.send(JSON.stringify({ type: 'error', content: 'Max players reached' }));
         ws.close();
         return true;
@@ -315,4 +337,18 @@ const findLastPlayerStanding = (activeUsers) => {
         return true;
     }
     return false;
+}
+
+const removeConnection = (ws) => {
+    const userID = ws.userID;
+
+    if (users[userID]) {
+        delete users[userID];
+        const message = JSON.stringify({ type: 'userDisconnected', content: userID });
+        broadcast(message);
+
+        if (isGameStarted) {
+            // handle player exit during the game
+        }
+    }
 }

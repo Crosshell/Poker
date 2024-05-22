@@ -71,6 +71,11 @@ const lobbyServerHandler = (socket, message) => {
                 userLobbyElement.textContent = `User ${userID}: ${readiness}`;
             }
             break;
+        case 'userDisconnected':
+            const disconnectedUserID = message.content;
+            const disconnectedUserElement = get('lobbyUser' + disconnectedUserID);
+            disconnectedUserElement.style.display = 'none';
+            break;
         case 'getHandCards':
             lobbyElement.style.display = 'none';
             game(socket, message.content);
