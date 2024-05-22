@@ -68,23 +68,7 @@ const handleMessage = (type, content, userID) => {
             }
             break;
         case 'playerMove':
-            switch (currentStreet) {
-                case 'PreFlop':
-                    preFlop(content.action, content.amount);
-                    break;
-                case 'Flop':
-                    flop();
-                    break;
-                case 'Turn':
-                    turn();
-                    break;
-                case 'River':
-                    river();
-                    break;
-                case 'Showdown':
-                    showdown();
-                    break;
-            }
+            streets(content.action, content.amount);
             break;
         default:
             console.warn('Unknown message type:', type);
@@ -217,6 +201,26 @@ const doBlinds = () => {
     sendUpdateBank();
 }
 
+const streets = (action, amount) => {
+    switch (currentStreet) {
+        case 'PreFlop':
+            preFlop(action, amount);
+            break;
+        case 'Flop':
+            flop();
+            break;
+        case 'Turn':
+            turn();
+            break;
+        case 'River':
+            river();
+            break;
+        case 'Showdown':
+            showdown();
+            break;
+    }
+}
+
 const preFlop = (action, amount) => {
 
     const currentUserID = queue.shift();
@@ -299,7 +303,7 @@ const showdown = () => {
 const handlePlayerTurn = () => {
     if (queue.length === 0) return;
     const currentUserID = queue[0];
-    const message = JSON.stringify({ type: 'turn', content: { userID: parseInt(currentUserID), street: currentStreet } });
+    const message = JSON.stringify({ type: 'turn', content: parseInt(currentUserID) });
     broadcast(message)
 };
 

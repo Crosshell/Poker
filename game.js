@@ -13,7 +13,6 @@ const usersArea = get('usersArea');
 const tableElement = get('table');
 const bankElement = get('bank');
 const controlPanel = get('controlPanel');
-const checkButton = get('check');
 const callButton = get('call');
 const foldButton = get('fold');
 const betButton = get('bet');
@@ -110,8 +109,8 @@ const gameServerHandler = (socket, message, handCards) => {
             updateDealer(message.content);
             break;
         case 'turn':
-            updateTurnUser(message.content.userID);
-            if (message.content.userID === yourID) makeMove(socket, message.content.street);
+            updateTurnUser(message.content);
+            if (message.content === yourID) makeMove(socket);
             break;
         case 'betError':
             alert(message.content);
@@ -175,25 +174,17 @@ const updateTurnUser = (turnUserID) => {
     currentTurnUserID = turnUserID;
 }
 
-const makeMove = (socket, street) => {
+const makeMove = (socket) => {
     controlPanel.style.display = 'flex';
-    if (street === 'PreFlop') checkButton.style.display = 'none';
-    const handleCheck = () => {
-        controlPanel.style.display = 'none';
-        socket.send(JSON.stringify( {type: 'playerMove', content: { action: 'check' } }));
-        removeButtonListeners();
-    };
 
     const handleCall = () => {
         controlPanel.style.display = 'none';
-        checkButton.style.display = 'block';
         socket.send(JSON.stringify({ type: 'playerMove', content: { action: 'call' } }));
         removeButtonListeners();
     };
 
     const handleFold = () => {
         controlPanel.style.display = 'none';
-        checkButton.style.display = 'block';
         socket.send(JSON.stringify({ type: 'playerMove', content: { action: 'fold' } }));
         removeButtonListeners();
     };
@@ -206,7 +197,6 @@ const makeMove = (socket, street) => {
                 break;
             } else if (!isNaN(parseFloat(bet))) {
                 controlPanel.style.display = 'none';
-                checkButton.style.display = 'block';
                 socket.send(JSON.stringify({ type: 'playerMove', content: { action: 'bet', amount: parseFloat(bet) } }));
                 validBet = true;
             } else {
@@ -217,14 +207,11 @@ const makeMove = (socket, street) => {
     }
 
     const removeButtonListeners = () => {
-        checkButton.removeEventListener('click', handleCheck);
         callButton.removeEventListener('click', handleCall);
         foldButton.removeEventListener('click', handleFold);
         betButton.removeEventListener('click', handleBet);
     };
 
-
-    checkButton.addEventListener('click', handleCheck);
     callButton.addEventListener('click', handleCall);
     foldButton.addEventListener('click', handleFold);
     betButton.addEventListener('click', handleBet);
