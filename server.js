@@ -2,17 +2,22 @@
 
 import { WebSocketServer } from 'ws';
 import { Deck } from './deck.js';
-import { MIN_PLAYERS, MAX_PLAYERS, SMALL_BLIND, BIG_BLIND, START_MONEY } from "./constants.js";
+import { MIN_PLAYERS, MAX_PLAYERS, SMALL_BLIND, BIG_BLIND, START_MONEY, FLOP_CARDS_COUNT, STREETS } from "./constants.js";
 import { dealUserCards } from "./user.js";
 import { checkWinner } from "./winner.js";
 
 const wss = new WebSocketServer({ port: 8080 });
-const users = {}
+const users = {};
+const deck = new Deck();
+const tableCards = [];
 let queue = [];
 let highestBid = BIG_BLIND;
-let currentStreet = 'PreFlop';
+let currentStreet = STREETS[0];
 let isGameStarted = false;
 let bank = 0;
+let isFlopCardsSent = false;
+let isTurnCardSent = false;
+let isRiverCardSent = false;
 
 wss.on('connection', (ws) => {
     const userID = getNextUserID();
@@ -90,7 +95,7 @@ const handleMessage = (type, content, userID) => {
             }
             break;
         case 'playerMove':
-            streets(content.action, content.amount);
+            handleGameRound(content.action, content.amount);
             break;
         default:
             console.warn('Unknown message type:', type);
@@ -121,10 +126,9 @@ const sendReadyStatusToNewUser = () => {
 
 const startGame = () => {
     isGameStarted = true;
-    const deck = new Deck();
     deck.generate();
     deck.shuffle();
-    dealCardsToUsers(deck);
+    dealCardsToUsers();
     sendCardsToUsers();
     sendPlayingUsers();
     sendUpdateMoney();
@@ -135,7 +139,7 @@ const startGame = () => {
     handlePlayerTurn();
 }
 
-const dealCardsToUsers = (deck) => {
+const dealCardsToUsers = () => {
     for (const user in users) {
         users[user].cards = dealUserCards(deck);
     }
@@ -223,28 +227,11 @@ const doBlinds = () => {
     sendUpdateBank();
 }
 
-const streets = (action, amount) => {
-    switch (currentStreet) {
-        case 'PreFlop':
-            preFlop(action, amount);
-            break;
-        case 'Flop':
-            flop();
-            break;
-        case 'Turn':
-            turn();
-            break;
-        case 'River':
-            river();
-            break;
-        case 'Showdown':
-            showdown();
-            break;
-    }
+const showdown = () => {
+
 }
 
-const preFlop = (action, amount) => {
-
+const handleGameRound = (action, amount) => {
     const result = processPlayerAction(action, amount);
 
     if (result === null) {
@@ -258,34 +245,22 @@ const preFlop = (action, amount) => {
     const allBidsEqual = activeUsers.every(userID => users[userID].bid === highestBid);
 
     if (allBidsEqual && queue.length === 0) {
-        currentStreet = 'Flop';
+        let currentIndex = STREETS.indexOf(currentStreet);
+        currentStreet = STREETS[currentIndex + 1];
         const userKeys = Object.keys(users);
         const leftPlayerFromDealerID = getLeftPlayerFromDealer(userKeys);
         queue = userKeys
             .slice(leftPlayerFromDealerID)
             .concat(userKeys.slice(0, leftPlayerFromDealerID))
             .filter(userID => !users[userID].hasFolded);
-        flop();
+        handlePlayerTurn();
+        if (!isFlopCardsSent && currentStreet === 'Flop') sendFlopCards();
+        if (!isTurnCardSent && currentStreet === 'Turn') sendTurnCard();
+        if (!isRiverCardSent && currentStreet === 'River') sendRiverCard();
         return;
     }
 
     handlePlayerTurn();
-}
-
-const flop = () => {
-
-}
-
-const turn = () => {
-
-}
-
-const river = () => {
-
-}
-
-const showdown = () => {
-
 }
 
 const processPlayerAction = (action, amount) => {
@@ -367,6 +342,29 @@ const getLeftPlayerFromDealer = (userKeys) => {
         leftPlayerFromDealerIndex = (leftPlayerFromDealerIndex + 1) % userKeys.length;
     }
     return leftPlayerFromDealerIndex;
+}
+
+const sendFlopCards = () => {
+    for (let i = 0; i < FLOP_CARDS_COUNT; i++) {
+        tableCards.push(deck.deal());
+    }
+    const message = JSON.stringify({ type: 'updateTable', content: tableCards });
+    broadcast(message);
+    isFlopCardsSent = true;
+}
+
+const sendTurnCard = () => {
+    tableCards.push(deck.deal());
+    const message = JSON.stringify({ type: 'updateTable', content: tableCards });
+    broadcast(message);
+    isTurnCardSent = true;
+}
+
+const sendRiverCard = () => {
+    tableCards.push(deck.deal());
+    const message = JSON.stringify({ type: 'updateTable', content: tableCards });
+    broadcast(message);
+    isRiverCardSent = true;
 }
 
 const removeConnection = (ws) => {

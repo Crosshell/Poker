@@ -10,3 +10,5 @@ export const MAX_PLAYERS = 10;
 export const START_MONEY = 1000;
 export const SMALL_BLIND = 5;
 export const BIG_BLIND = 10;
+export const FLOP_CARDS_COUNT = 3;
+export const STREETS = ['PreFlop', 'Flop', 'Turn', 'River', 'Showdown'];

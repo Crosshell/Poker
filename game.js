@@ -16,7 +16,11 @@ const controlPanel = get('controlPanel');
 const callButton = get('call');
 const foldButton = get('fold');
 const betButton = get('bet');
-
+const flopCard1Element = get('flopCard1');
+const flopCard2Element = get('flopCard2');
+const flopCard3Element = get('flopCard3');
+const turnCardElement = get('turnCard');
+const riverCardElement = get('riverCard');
 
 document.addEventListener('DOMContentLoaded', () => {
     startScreen();
@@ -123,6 +127,9 @@ const gameServerHandler = (socket, message, handCards) => {
         case 'foldedUser':
             updateFoldedUsers(message.content);
             break;
+        case 'updateTable':
+            updateTable(message.content);
+            break;
         case 'gameOver':
             alert(`WINNER IS ${message.content.user} with ${message.content.combination}`);
             break;
@@ -227,3 +234,10 @@ const updateFoldedUsers = (foldedUserID) => {
     foldedUserElement.style.color = 'rgba(199,199,199,0.94)';
 }
 
+const updateTable = (tableCards) => {
+    flopCard1Element.src = `images/cards/${tableCards[0].rank}-${tableCards[0].suit}.png`;
+    flopCard2Element.src = `images/cards/${tableCards[1].rank}-${tableCards[1].suit}.png`;
+    flopCard3Element.src = `images/cards/${tableCards[2].rank}-${tableCards[2].suit}.png`;
+    turnCardElement.src = `images/cards/${tableCards[3].rank}-${tableCards[3].suit}.png`;
+    riverCardElement.src = `images/cards/${tableCards[4].rank}-${tableCards[4].suit}.png`;
+}
