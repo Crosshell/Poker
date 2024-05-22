@@ -1,4 +1,5 @@
 'use strict';
+
 const get = (id) => document.getElementById(id);
 
 let yourID = 0;

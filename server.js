@@ -1,3 +1,5 @@
+'use strict';
+
 import { WebSocketServer } from 'ws';
 import { Deck } from './deck.js';
 import { MAX_PLAYERS, SMALL_BLIND, BIG_BLIND, START_MONEY } from "./constants.js";
@@ -11,7 +13,7 @@ let highestBid = BIG_BLIND;
 let currentStreet = 'PreFlop';
 let isGameStarted = false;
 
-wss.on('connection', function connection(ws) {
+wss.on('connection', (ws) => {
     const userCount = Object.keys(users).length + 1;
     const userID = userCount;
 
@@ -28,14 +30,14 @@ wss.on('connection', function connection(ws) {
     broadcast(message);
     sendReadyStatusToNewUser();
 
-    ws.on('message', function incoming(message) {
+    ws.on('message', (message) => {
         const parsedMessage = JSON.parse(message);
         const { type, content } = parsedMessage;
 
         handleMessage(type, content, ws.userID);
 
-        ws.on('error', function error(err) {
-            console.error('WebSocket error:', err);
+        ws.on('error', (error) => {
+            console.error('WebSocket error:', error);
         });
     });
 
@@ -227,23 +229,21 @@ const preFlop = (action, amount) => {
             queue.unshift(currentUserID);
             handlePlayerTurn();
             return;
-        } else if (amount + users[currentUserID].bid < highestBid) {
+        } else if (amount + users[currentUserID].bid <= highestBid) {
             const message = JSON.stringify({ type: 'betError', content: 'The bid must be greater than the current highest bid' });
             users[currentUserID].ws.send(message);
             queue.unshift(currentUserID);
             handlePlayerTurn();
             return;
         }
-        highestBid += amount;
+        highestBid = amount;
         users[currentUserID].money -= amount;
         users[currentUserID].bid += amount;
-        if (queue.length === 0) {
-            const userKeys = Object.keys(users);
-            queue = userKeys
-                .slice(currentUserID)
-                .concat(userKeys.slice(0, currentUserID))
-                .filter(userID => !users[userID].hasFolded);
-        }
+        const userKeys = Object.keys(users);
+        queue = userKeys
+            .slice(currentUserID)
+            .concat(userKeys.slice(0, currentUserID))
+            .filter(userID => !users[userID].hasFolded);
     } else {
         return;
     }
