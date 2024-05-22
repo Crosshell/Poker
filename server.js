@@ -2,8 +2,9 @@
 
 import { WebSocketServer } from 'ws';
 import { Deck } from './deck.js';
-import { MIN_PLAYERS, MAX_PLAYERS, SMALL_BLIND, BIG_BLIND, START_MONEY, FLOP_CARDS_COUNT, STREETS } from "./constants.js";
-import { dealUserCards } from "./user.js";
+import { MIN_PLAYERS, MAX_PLAYERS, SMALL_BLIND, BIG_BLIND, START_MONEY, FLOP_CARDS_COUNT, STREETS } from './constants.js';
+import { dealUserCards } from './user.js';
+import { checkHighestCombination } from './combinations.js'
 import { checkWinner } from "./winner.js";
 
 const wss = new WebSocketServer({ port: 8080 });
@@ -227,10 +228,6 @@ const doBlinds = () => {
     sendUpdateBank();
 }
 
-const showdown = () => {
-
-}
-
 const handleGameRound = (action, amount) => {
     const result = processPlayerAction(action, amount);
 
@@ -253,13 +250,18 @@ const handleGameRound = (action, amount) => {
             .slice(leftPlayerFromDealerID)
             .concat(userKeys.slice(0, leftPlayerFromDealerID))
             .filter(userID => !users[userID].hasFolded);
-        handlePlayerTurn();
+
+        if (currentStreet === 'Showdown') {
+            showdown();
+        } else {
+            handlePlayerTurn();
+        }
+
         if (!isFlopCardsSent && currentStreet === 'Flop') sendFlopCards();
         if (!isTurnCardSent && currentStreet === 'Turn') sendTurnCard();
         if (!isRiverCardSent && currentStreet === 'River') sendRiverCard();
         return;
     }
-
     handlePlayerTurn();
 }
 
@@ -311,6 +313,33 @@ const processPlayerAction = (action, amount) => {
     sendUpdateBank();
 }
 
+const showdown = () => {
+    const usersCombination = {};
+    const usersCards = {};
+    for (const userID in users) {
+        if (!users[userID].hasFolded){
+            users[userID].combination = checkHighestCombination(users[userID].cards, tableCards);
+            usersCombination[userID] = users[userID].combination;
+            usersCards[userID] = users[userID].cards;
+        }
+    }
+
+    const notFoldedUsers = Object.fromEntries(
+        Object.entries(users).filter(([_, user]) => !user.hasFolded)
+    );
+
+    const winnersID = checkWinner(notFoldedUsers);
+    const message = JSON.stringify({
+        type: 'gameOver',
+        content: {
+            winners: winnersID,
+            usersCombination: usersCombination,
+            usersCards: usersCards
+        }
+    });
+    broadcast(message);
+}
+
 const handlePlayerTurn = () => {
     if (queue.length === 0) return;
     const currentUserID = queue[0];
@@ -320,8 +349,8 @@ const handlePlayerTurn = () => {
 
 const findLastPlayerStanding = (activeUsers) => {
     if (activeUsers.length === 1) {
-        const winner = activeUsers[0];
-        const message = JSON.stringify({ type: 'gameOver', content: {user: winner, combination: null } });
+        const winnerID = activeUsers[0];
+        const message = JSON.stringify({ type: 'gameOverByFold', content: { winnerID: winnerID, winnerCards: users[winnerID].cards } });
         broadcast(message);
         return true;
     }

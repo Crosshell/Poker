@@ -130,8 +130,11 @@ const gameServerHandler = (socket, message, handCards) => {
         case 'updateTable':
             updateTable(message.content);
             break;
+        case 'gameOverByFold':
+            gameOverByFold(message.content.winnerID, message.content.winnerCards);
+            break;
         case 'gameOver':
-            alert(`WINNER IS ${message.content.user} with ${message.content.combination}`);
+            gameOver(message.content.winners, message.content.usersCombination, message.content.usersCards);
             break;
     }
 }
@@ -176,8 +179,8 @@ const updateDealer = (dealer) => {
 let currentTurnUserID = 0;
 const updateTurnUser = (turnUserID) => {
     if (currentTurnUserID) {
-        const previousGameUserHTML = get('gameSlot' + currentTurnUserID);
-        previousGameUserHTML.style.background = '';
+        const previousGameUserElement = get('gameSlot' + currentTurnUserID);
+        previousGameUserElement.style.background = '';
     }
 
     const gameUserElement = get('gameSlot' + turnUserID);
@@ -240,4 +243,33 @@ const updateTable = (tableCards) => {
     flopCard3Element.src = `images/cards/${tableCards[2].rank}-${tableCards[2].suit}.png`;
     turnCardElement.src = `images/cards/${tableCards[3].rank}-${tableCards[3].suit}.png`;
     riverCardElement.src = `images/cards/${tableCards[4].rank}-${tableCards[4].suit}.png`;
+}
+
+const gameOverByFold = (winnerID, winnerCards) => {
+    const currentTurnUSerElement = get('gameSlot' + currentTurnUserID);
+    currentTurnUSerElement.style.background = '';
+    const winnerElement = get('gameSlot' + winnerID);
+    const winnerFirstCardElement = get('firstCardSlot' + winnerID);
+    const winnerSecondCardElement = get('secondCardSlot' + winnerID);
+    winnerElement.style.background = 'yellow';
+    winnerFirstCardElement.src = `images/cards/${winnerCards[0].rank}-${winnerCards[0].suit}.png`;
+    winnerSecondCardElement.src = `images/cards/${winnerCards[1].rank}-${winnerCards[1].suit}.png`;
+    alert(`User ${winnerID} won due to all players folding`);
+}
+
+const gameOver = (winnersID, usersCombinations, usersCards) => {
+    console.log(`game over: \nwinnersID: ${winnersID} \nusersCombinations: ${JSON.stringify(usersCombinations)} \nusersCards: ${JSON.stringify(usersCards)}`);
+    const currentTurnUSerElement = get('gameSlot' + currentTurnUserID);
+    currentTurnUSerElement.style.background = '';
+    for (const winnerID of winnersID) {
+        const winnerElement = get('gameSlot' + winnerID);
+        winnerElement.style.background = 'yellow';
+    }
+    for (const userID in usersCards) {
+        const firstHandCardElement = get('firstCardSlot' + userID);
+        const secondHandCardElement = get('secondCardSlot' + userID);
+        firstHandCardElement.src = `images/cards/${usersCards[userID][0].rank}-${usersCards[userID][0].suit}.png`;
+        secondHandCardElement.src = `images/cards/${usersCards[userID][1].rank}-${usersCards[userID][1].suit}.png`;
+    }
+    alert(`WINNER IS User ${winnersID} with ${usersCombinations[winnersID[0]].name}`);
 }
