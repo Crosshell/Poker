@@ -153,8 +153,8 @@ const getPrevDoubleCards = (ranksCount) => {
     let curDoubleCards = null;
     let prevDoubleCards = null;
     for (const rank in ranksCount) {
-        prevDoubleCards = curDoubleCards;
         if (ranksCount[rank] === 2){
+            prevDoubleCards = curDoubleCards;
             curDoubleCards = rank;
         }
     }
