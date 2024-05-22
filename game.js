@@ -74,6 +74,9 @@ const lobbyServerHandler = (socket, message) => {
             lobbyElement.style.display = 'none';
             game(socket, message.content);
             break;
+        case 'error':
+            alert(message.content);
+            break;
     }
 }
 

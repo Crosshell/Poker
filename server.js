@@ -9,14 +9,13 @@ const users = {}
 let queue = [];
 let highestBid = BIG_BLIND;
 let currentStreet = 'PreFlop';
+let isGameStarted = false;
 
 wss.on('connection', function connection(ws) {
     const userCount = Object.keys(users).length + 1;
     const userID = userCount;
 
-    if (userCount > MAX_PLAYERS) {
-        ws.send(JSON.stringify({ error: 'Max players reached' }));
-        ws.close();
+    if (handleConnectionError(ws, userCount)) {
         return;
     }
 
@@ -41,6 +40,19 @@ wss.on('connection', function connection(ws) {
     });
 
 });
+
+const handleConnectionError = (ws, userCount) => {
+    if (userCount > MAX_PLAYERS) {
+        ws.send(JSON.stringify({ type: 'error', content: 'Max players reached' }));
+        ws.close();
+        return true;
+    } else if (isGameStarted) {
+        ws.send(JSON.stringify({ type: 'error', content: 'The game has already started' }));
+        ws.close();
+        return true;
+    }
+    return false;
+};
 
 const handleMessage = (type, content, userID) => {
     switch (type) {
@@ -99,6 +111,7 @@ const sendReadyStatusToNewUser = () => {
 }
 
 const startGame = () => {
+    isGameStarted = true;
     const deck = new Deck();
     deck.generate();
     deck.shuffle();
