@@ -259,6 +259,12 @@ const preFlop = (action, amount) => {
 
     if (allBidsEqual && queue.length === 0) {
         currentStreet = 'Flop';
+        const userKeys = Object.keys(users);
+        const leftPlayerFromDealerID = getLeftPlayerFromDealer(userKeys);
+        queue = userKeys
+            .slice(leftPlayerFromDealerID)
+            .concat(userKeys.slice(0, leftPlayerFromDealerID))
+            .filter(userID => !users[userID].hasFolded);
         flop();
         return;
     }
@@ -291,8 +297,6 @@ const processPlayerAction = (action, amount) => {
         broadcast(message);
     } else if (action === 'call') {
         const callAmount = highestBid - users[currentUserID].bid;
-        console.log('call Amount = ' + callAmount);
-        console.log('highestBid = ' + highestBid);
         if (users[currentUserID].money - callAmount < 0) {
             users[currentUserID].bid = users[currentUserID].money + users[currentUserID].bid;
             users[currentUserID].money = 0;
@@ -347,6 +351,22 @@ const findLastPlayerStanding = (activeUsers) => {
         return true;
     }
     return false;
+}
+
+const getLeftPlayerFromDealer = (userKeys) => {
+    let dealerID;
+    for (const userID in users) {
+        if (users[userID].isDealer) {
+            dealerID = userID;
+            break;
+        }
+    }
+    const dealerIndex = userKeys.indexOf(dealerID);
+    let leftPlayerFromDealerIndex = (dealerIndex + 1) % userKeys.length;
+    while (users[userKeys[leftPlayerFromDealerIndex]].hasFolded) {
+        leftPlayerFromDealerIndex = (leftPlayerFromDealerIndex + 1) % userKeys.length;
+    }
+    return leftPlayerFromDealerIndex;
 }
 
 const removeConnection = (ws) => {
