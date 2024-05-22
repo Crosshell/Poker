@@ -5,6 +5,7 @@ export const FIRST_CARD_CHECK = ['Pair', 'Three of a kind', 'Straight', 'Four of
 export const TABLE_CARD_SIZE = 5;
 export const MAX_COMBINATION_SIZE = 5;
 export const MAX_HAND_SIZE = 2;
+export const MIN_PLAYERS = 2;
 export const MAX_PLAYERS = 10;
 export const START_MONEY = 1000;
 export const SMALL_BLIND = 5;

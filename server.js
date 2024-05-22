@@ -2,7 +2,7 @@
 
 import { WebSocketServer } from 'ws';
 import { Deck } from './deck.js';
-import { MAX_PLAYERS, SMALL_BLIND, BIG_BLIND, START_MONEY } from "./constants.js";
+import { MIN_PLAYERS, MAX_PLAYERS, SMALL_BLIND, BIG_BLIND, START_MONEY } from "./constants.js";
 import { dealUserCards } from "./user.js";
 import { checkWinner } from "./winner.js";
 
@@ -85,7 +85,7 @@ const handleMessage = (type, content, userID) => {
             users[userID].isReady = content;
             const message = JSON.stringify({ type: 'updateReadiness', content: { isReady: content, userID: userID } });
             broadcast(message);
-            if (Object.keys(users).length >= 2 && isAllReady()){
+            if (Object.keys(users).length >= MIN_PLAYERS && isAllReady()){
                 startGame();
             }
             break;
