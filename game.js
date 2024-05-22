@@ -9,7 +9,7 @@ const startScreenElement = get('startScreen');
 const connectingMessage = get('connectingMessage');
 const lobbyElement = get('lobby');
 const readyButton = get('ready');
-const usersArea = get('usersArea');
+const slotsArea = get('slotsArea');
 const tableElement = get('table');
 const bankElement = get('bank');
 const controlPanel = get('controlPanel');
@@ -56,14 +56,14 @@ const lobbyServerHandler = (socket, message) => {
         case 'newConnect':
             const connectedUsers = message.content;
             for (const userID of connectedUsers) {
-                const connectedUserElement = get('lobbyUser' + userID);
+                const connectedUserElement = get('lobbySlot' + userID);
                 connectedUserElement.style.display = 'flex';
             }
             break;
         case 'updateReadiness':
             const isUserReady = message.content.isReady;
             const userID = message.content.userID;
-            const userLobbyElement = get('lobbyUser' + userID);
+            const userLobbyElement = get('lobbySlot' + userID);
             const readiness = isUserReady ? 'Ready' : 'Not Ready';
             if (userID === yourID) {
                 userLobbyElement.textContent = `User ${userID} (You): ${readiness}`;
@@ -73,7 +73,7 @@ const lobbyServerHandler = (socket, message) => {
             break;
         case 'userDisconnected':
             const disconnectedUserID = message.content;
-            const disconnectedUserElement = get('lobbyUser' + disconnectedUserID);
+            const disconnectedUserElement = get('lobbySlot' + disconnectedUserID);
             disconnectedUserElement.style.display = 'none';
             break;
         case 'getHandCards':
@@ -87,7 +87,7 @@ const lobbyServerHandler = (socket, message) => {
 }
 
 const game = (socket, handCards) => {
-    usersArea.style.display = 'grid';
+    slotsArea.style.display = 'grid';
     tableElement.style.display = 'flex';
     socket.addEventListener('message', (event) => {
         const message = JSON.parse(event.data);
@@ -131,49 +131,49 @@ const gameServerHandler = (socket, message, handCards) => {
 
 const showPlayers = (usersToShow) => {
     for (const userID of usersToShow) {
-        const gameUserElement = get('gameUser' + userID);
+        const gameUserElement = get('gameSlot' + userID);
         gameUserElement.style.display = 'flex';
         if (userID === yourID){
-            const yourNameElement = get('nameUser' + userID);
+            const yourNameElement = get('nameSlot' + userID);
             yourNameElement.textContent = 'YOU';
         }
     }
 }
 
 const showYourHandCards = (handCards) => {
-    const firstHandCardElement = get('firstCardUser' + yourID);
-    const secondHandCardElement = get('secondCardUser' + yourID);
+    const firstHandCardElement = get('firstCardSlot' + yourID);
+    const secondHandCardElement = get('secondCardSlot' + yourID);
     firstHandCardElement.src = `images/cards/${handCards[0].rank}-${handCards[0].suit}.png`;
     secondHandCardElement.src = `images/cards/${handCards[1].rank}-${handCards[1].suit}.png`;
 }
 
 const updateUsersMoney = (usersMoney) => {
     for (const userID in usersMoney) {
-        const userMoneyElement = get('moneyUser' + userID);
+        const userMoneyElement = get('moneySlot' + userID);
         userMoneyElement.textContent = 'Money: $' + usersMoney[userID];
     }
 }
 
 const updateUsersBid = (usersBid) => {
     for (const userID in usersBid) {
-        const userBidElement = get('bidUser' + userID);
+        const userBidElement = get('bidSlot' + userID);
         userBidElement.textContent = 'Bid: $' + usersBid[userID];
     }
 }
 
 const updateDealer = (dealer) => {
-    const dealerElement = get('dealerUser' + dealer);
+    const dealerElement = get('dealerSlot' + dealer);
     dealerElement.textContent = 'Dealer';
 }
 
 let currentTurnUserID = 0;
 const updateTurnUser = (turnUserID) => {
     if (currentTurnUserID) {
-        const previousGameUserHTML = get('gameUser' + currentTurnUserID);
+        const previousGameUserHTML = get('gameSlot' + currentTurnUserID);
         previousGameUserHTML.style.background = '';
     }
 
-    const gameUserElement = get('gameUser' + turnUserID);
+    const gameUserElement = get('gameSlot' + turnUserID);
     gameUserElement.style.background = '#c2c2c2';
 
     currentTurnUserID = turnUserID;
@@ -223,7 +223,7 @@ const makeMove = (socket) => {
 }
 const updateFoldedUsers = (foldedUserID) => {
     alert(`User ${foldedUserID} has folded`);
-    const foldedUserElement = get('gameUser' + foldedUserID);
+    const foldedUserElement = get('gameSlot' + foldedUserID);
     foldedUserElement.style.color = 'rgba(199,199,199,0.94)';
 }
 
