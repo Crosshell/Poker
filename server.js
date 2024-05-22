@@ -245,51 +245,11 @@ const streets = (action, amount) => {
 
 const preFlop = (action, amount) => {
 
-    const currentUserID = queue.shift();
+    const result = processPlayerAction(action, amount);
 
-    if (action === 'fold') {
-        users[currentUserID].hasFolded = true;
-        const message = JSON.stringify({ type: 'foldedUser', content: currentUserID });
-        broadcast(message);
-    } else if (action === 'call') {
-        const callAmount = highestBid - users[currentUserID].bid;
-        if (users[currentUserID].money - callAmount < 0) {
-            users[currentUserID].bid = users[currentUserID].money + users[currentUserID].bid;
-            users[currentUserID].money = 0;
-        } else {
-            users[currentUserID].money -= callAmount;
-            users[currentUserID].bid += callAmount;
-        }
-
-    } else if (action === 'bet') {
-        if (users[currentUserID].money < amount){
-            const message = JSON.stringify({ type: 'betError', content: 'The bet must be less than the amount of your money' });
-            users[currentUserID].ws.send(message);
-            queue.unshift(currentUserID);
-            handlePlayerTurn();
-            return;
-        } else if (amount + users[currentUserID].bid <= highestBid) {
-            const message = JSON.stringify({ type: 'betError', content: 'The bid must be greater than the current highest bid' });
-            users[currentUserID].ws.send(message);
-            queue.unshift(currentUserID);
-            handlePlayerTurn();
-            return;
-        }
-        highestBid = amount;
-        users[currentUserID].money -= amount;
-        users[currentUserID].bid += amount;
-        const userKeys = Object.keys(users);
-        queue = userKeys
-            .slice(currentUserID)
-            .concat(userKeys.slice(0, currentUserID))
-            .filter(userID => !users[userID].hasFolded);
-    } else {
+    if (result === null) {
         return;
     }
-
-    sendUpdateMoney();
-    sendUpdateBid();
-    sendUpdateBank();
 
     const activeUsers = Object.keys(users).filter(userID => !users[userID].hasFolded);
 
@@ -320,6 +280,56 @@ const river = () => {
 
 const showdown = () => {
 
+}
+
+const processPlayerAction = (action, amount) => {
+    const currentUserID = queue.shift();
+
+    if (action === 'fold') {
+        users[currentUserID].hasFolded = true;
+        const message = JSON.stringify({ type: 'foldedUser', content: currentUserID });
+        broadcast(message);
+    } else if (action === 'call') {
+        const callAmount = highestBid - users[currentUserID].bid;
+        console.log('call Amount = ' + callAmount);
+        console.log('highestBid = ' + highestBid);
+        if (users[currentUserID].money - callAmount < 0) {
+            users[currentUserID].bid = users[currentUserID].money + users[currentUserID].bid;
+            users[currentUserID].money = 0;
+        } else {
+            users[currentUserID].money -= callAmount;
+            users[currentUserID].bid += callAmount;
+        }
+
+    } else if (action === 'bet') {
+        if (users[currentUserID].money < amount){
+            const message = JSON.stringify({ type: 'betError', content: 'The bet must be less than the amount of your money' });
+            users[currentUserID].ws.send(message);
+            queue.unshift(currentUserID);
+            handlePlayerTurn();
+            return null;
+        } else if (amount + users[currentUserID].bid <= highestBid) {
+            const message = JSON.stringify({ type: 'betError', content: 'The bid must be greater than the current highest bid' });
+            users[currentUserID].ws.send(message);
+            queue.unshift(currentUserID);
+            handlePlayerTurn();
+            return null;
+        }
+        highestBid = amount + users[currentUserID].bid;
+        users[currentUserID].money -= amount;
+        users[currentUserID].bid += amount;
+        const userKeys = Object.keys(users);
+        queue = userKeys
+            .slice(currentUserID)
+            .concat(userKeys.slice(0, currentUserID))
+            .filter(userID => !users[userID].hasFolded);
+    } else {
+        return null;
+    }
+
+    sendUpdateMoney();
+    sendUpdateBid();
+    sendUpdateBank();
 }
 
 const handlePlayerTurn = () => {
