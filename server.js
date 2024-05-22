@@ -12,6 +12,7 @@ let queue = [];
 let highestBid = BIG_BLIND;
 let currentStreet = 'PreFlop';
 let isGameStarted = false;
+let bank = 0;
 
 wss.on('connection', (ws) => {
     const userCount = Object.keys(users).length + 1;
@@ -122,6 +123,7 @@ const startGame = () => {
     sendPlayingUsers();
     sendUpdateMoney();
     sendUpdateBid();
+    sendUpdateBank();
     getDealer();
     doBlinds();
     handlePlayerTurn();
@@ -167,6 +169,16 @@ const sendUpdateBid = () => {
     broadcast(message)
 }
 
+const sendUpdateBank = () => {
+    let money = 0;
+    for (const userID in users) {
+        money += users[userID].bid;
+    }
+    bank = money;
+    const message = JSON.stringify({ type: 'updateBank', content: bank });
+    broadcast(message);
+}
+
 const getDealer = () => {
     const userKeys = Object.keys(users);
     const randomIndex = Math.floor(Math.random() * userKeys.length);
@@ -200,8 +212,9 @@ const doBlinds = () => {
     bigBlindUser.money -= BIG_BLIND;
     bigBlindUser.bid += BIG_BLIND;
     queue = userKeys.slice(firstMoveIndex).concat(userKeys.slice(0, firstMoveIndex));
-    sendUpdateMoney(users);
-    sendUpdateBid(users);
+    sendUpdateMoney();
+    sendUpdateBid();
+    sendUpdateBank();
 }
 
 const preFlop = (action, amount) => {
@@ -248,8 +261,9 @@ const preFlop = (action, amount) => {
         return;
     }
 
-    sendUpdateMoney(users);
-    sendUpdateBid(users);
+    sendUpdateMoney();
+    sendUpdateBid();
+    sendUpdateBank();
 
     const activeUsers = Object.keys(users).filter(userID => !users[userID].hasFolded);
 

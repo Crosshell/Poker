@@ -11,6 +11,7 @@ const lobbyElement = get('lobby');
 const readyButton = get('ready');
 const usersArea = get('usersArea');
 const tableElement = get('table');
+const bankElement = get('bank');
 const controlPanel = get('controlPanel');
 const checkButton = get('check');
 const callButton = get('call');
@@ -101,6 +102,9 @@ const gameServerHandler = (socket, message, handCards) => {
             break;
         case 'updateBid':
             updateUsersBid(message.content);
+            break;
+        case 'updateBank':
+            bankElement.textContent = `Bank: $` + message.content;
             break;
         case 'getDealer':
             updateDealer(message.content);
