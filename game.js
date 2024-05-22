@@ -258,7 +258,6 @@ const gameOverByFold = (winnerID, winnerCards) => {
 }
 
 const gameOver = (winnersID, usersCombinations, usersCards) => {
-    console.log(`game over: \nwinnersID: ${winnersID} \nusersCombinations: ${JSON.stringify(usersCombinations)} \nusersCards: ${JSON.stringify(usersCards)}`);
     const currentTurnUSerElement = get('gameSlot' + currentTurnUserID);
     currentTurnUSerElement.style.background = '';
     for (const winnerID of winnersID) {
@@ -266,8 +265,10 @@ const gameOver = (winnersID, usersCombinations, usersCards) => {
         winnerElement.style.background = 'yellow';
     }
     for (const userID in usersCards) {
+        const combinationElement = get('combinationSlot' + userID);
         const firstHandCardElement = get('firstCardSlot' + userID);
         const secondHandCardElement = get('secondCardSlot' + userID);
+        combinationElement.textContent = usersCombinations[userID].name;
         firstHandCardElement.src = `images/cards/${usersCards[userID][0].rank}-${usersCards[userID][0].suit}.png`;
         secondHandCardElement.src = `images/cards/${usersCards[userID][1].rank}-${usersCards[userID][1].suit}.png`;
     }

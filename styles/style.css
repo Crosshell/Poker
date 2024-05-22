@@ -129,3 +129,8 @@
 #dealerSlot6, #dealerSlot7, #dealerSlot8, #dealerSlot9 {
     color: red;
 }
+#combinationSlot1, #combinationSlot2, #combinationSlot3, #combinationSlot4,
+#combinationSlot5, #combinationSlot6, #combinationSlot7, #combinationSlot8,
+#combinationSlot9, #combinationSlot10 {
+    color: midnightblue;
+}
