@@ -75,7 +75,7 @@ const lobbyServerHandler = (socket, message) => {
                 userLobbyElement.textContent = `User ${userID}: ${readiness}`;
             }
             break;
-        case 'userDisconnected':
+        case 'userLobbyDisconnected':
             const disconnectedUserID = message.content;
             const disconnectedUserElement = get('lobbySlot' + disconnectedUserID);
             disconnectedUserElement.style.display = 'none';
@@ -132,6 +132,9 @@ const gameServerHandler = (socket, message, handCards) => {
             break;
         case 'gameOverByFold':
             gameOverByFold(message.content.winnerID, message.content.winnerCards);
+            break;
+        case 'userGameDisconnected':
+            updateDisconnectedUser(message.content);
             break;
         case 'gameOver':
             gameOver(message.content.winners, message.content.usersCombination, message.content.usersCards);
@@ -231,10 +234,17 @@ const makeMove = (socket) => {
     foldButton.addEventListener('click', handleFold);
     betButton.addEventListener('click', handleBet);
 }
+
 const updateFoldedUsers = (foldedUserID) => {
     alert(`User ${foldedUserID} has folded`);
     const foldedUserElement = get('gameSlot' + foldedUserID);
     foldedUserElement.style.color = 'rgba(199,199,199,0.94)';
+}
+
+const updateDisconnectedUser = (disconnectedUserID) => {
+    alert(`User ${disconnectedUserID} disconnected`);
+    const disconnectedUserElement = get('gameSlot' + disconnectedUserID);
+    disconnectedUserElement.style.color = 'rgba(199,199,199,0.94)';
 }
 
 const updateTable = (tableCards) => {

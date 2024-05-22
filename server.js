@@ -399,13 +399,17 @@ const sendRiverCard = () => {
 const removeConnection = (ws) => {
     const userID = ws.userID;
 
-    if (users[userID]) {
-        delete users[userID];
-        const message = JSON.stringify({ type: 'userDisconnected', content: userID });
+    if (isGameStarted) {
+        users[userID].hasFolded = true;
+        const message = JSON.stringify({ type: 'userGameDisconnected', content: userID });
         broadcast(message);
-
-        if (isGameStarted) {
-            // handle player exit during the game
+        if (userID === parseInt(queue[0])) {
+            queue.shift();
+            handlePlayerTurn();
         }
+    } else if (users[userID]) {
+        delete users[userID];
+        const message = JSON.stringify({ type: 'userLobbyDisconnected', content: userID });
+        broadcast(message);
     }
 }
