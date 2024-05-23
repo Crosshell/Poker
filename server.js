@@ -229,6 +229,7 @@ const doBlinds = () => {
 }
 
 const handleGameRound = (action, amount) => {
+    if (findLastPlayerStanding()) return;
     const result = processPlayerAction(action, amount);
 
     if (result === null) {
@@ -236,9 +237,6 @@ const handleGameRound = (action, amount) => {
     }
 
     const activeUsers = Object.keys(users).filter(userID => !users[userID].hasFolded);
-
-    if (findLastPlayerStanding(activeUsers)) return;
-
     const allBidsEqual = activeUsers.every(userID => users[userID].bid === highestBid);
 
     if (allBidsEqual && queue.length === 0) {
@@ -329,6 +327,14 @@ const showdown = () => {
     );
 
     const winnersID = checkWinner(notFoldedUsers);
+    const dividedMoney = Math.floor(bank / winnersID.length);
+    for (const winnerID in winnersID) {
+        users[winnerID].money += dividedMoney;
+    }
+
+    bank = 0;
+    sendUpdateMoney();
+    sendUpdateBank();
     const message = JSON.stringify({
         type: 'gameOver',
         content: {
@@ -341,15 +347,20 @@ const showdown = () => {
 }
 
 const handlePlayerTurn = () => {
-    if (queue.length === 0) return;
+    if (queue.length === 0 || findLastPlayerStanding()) return;
     const currentUserID = queue[0];
     const message = JSON.stringify({ type: 'turn', content: parseInt(currentUserID) });
     broadcast(message)
 };
 
-const findLastPlayerStanding = (activeUsers) => {
+const findLastPlayerStanding = () => {
+    const activeUsers = Object.keys(users).filter(userID => !users[userID].hasFolded)
     if (activeUsers.length === 1) {
         const winnerID = activeUsers[0];
+        users[winnerID].money += bank;
+        bank = 0;
+        sendUpdateMoney();
+        sendUpdateBank();
         const message = JSON.stringify({ type: 'gameOverByFold', content: { winnerID: winnerID, winnerCards: users[winnerID].cards } });
         broadcast(message);
         return true;
@@ -405,8 +416,8 @@ const removeConnection = (ws) => {
         broadcast(message);
         if (userID === parseInt(queue[0])) {
             queue.shift();
-            handlePlayerTurn();
         }
+        handlePlayerTurn();
     } else if (users[userID]) {
         delete users[userID];
         const message = JSON.stringify({ type: 'userLobbyDisconnected', content: userID });
