@@ -208,19 +208,9 @@ const makeMove = (socket) => {
     };
 
     const handleBet = () => {
-        let validBet = false;
-        while (!validBet) {
-            const bet = prompt('Enter bet: ');
-            if (bet === null) {
-                break;
-            } else if (!isNaN(parseFloat(bet))) {
-                controlPanel.style.display = 'none';
-                socket.send(JSON.stringify({ type: 'playerMove', content: { action: 'bet', amount: parseFloat(bet) } }));
-                validBet = true;
-            } else {
-                alert('Please enter a valid bet amount.');
-            }
-        }
+        const bet = prompt('Enter bet: ');
+        controlPanel.style.display = 'none';
+        socket.send(JSON.stringify({ type: 'playerMove', content: { action: 'bet', amount: parseInt(bet) } }));
         removeButtonListeners();
     }
 
