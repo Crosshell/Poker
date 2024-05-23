@@ -328,7 +328,7 @@ const showdown = () => {
 
     const winnersID = checkWinner(notFoldedUsers);
     const dividedMoney = Math.floor(bank / winnersID.length);
-    for (const winnerID in winnersID) {
+    for (const winnerID of winnersID) {
         users[winnerID].money += dividedMoney;
     }
 
