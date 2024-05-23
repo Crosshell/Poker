@@ -4,32 +4,36 @@ const get = (id) => document.getElementById(id);
 
 let yourID = 0;
 let isYouReady = false;
-const connectButton = get('connect');
-const startScreenElement = get('startScreen');
-const connectingMessage = get('connectingMessage');
-const lobbyElement = get('lobby');
-const readyButton = get('ready');
-const slotsArea = get('slotsArea');
-const tableElement = get('table');
-const bankElement = get('bank');
-const controlPanel = get('controlPanel');
-const callButton = get('call');
-const foldButton = get('fold');
-const betButton = get('bet');
-const flopCard1Element = get('flopCard1');
-const flopCard2Element = get('flopCard2');
-const flopCard3Element = get('flopCard3');
-const turnCardElement = get('turnCard');
-const riverCardElement = get('riverCard');
+let currentTurnUserID = 0;
+
+const UI = {
+    connectButton: get('connect'),
+    startScreenElement: get('startScreen'),
+    connectingMessage: get('connectingMessage'),
+    lobbyElement: get('lobby'),
+    readyButton: get('ready'),
+    slotsArea: get('slotsArea'),
+    tableElement: get('table'),
+    bankElement: get('bank'),
+    controlPanel: get('controlPanel'),
+    callButton: get('call'),
+    foldButton: get('fold'),
+    betButton: get('bet'),
+    flopCard1Element: get('flopCard1'),
+    flopCard2Element: get('flopCard2'),
+    flopCard3Element: get('flopCard3'),
+    turnCardElement: get('turnCard'),
+    riverCardElement: get('riverCard'),
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     startScreen();
 });
 
 const startScreen = () => {
-    connectButton.addEventListener('click', () => {
-        startScreenElement.style.display = 'none';
-        connectingMessage.style.display = 'block';
+    UI.connectButton.addEventListener('click', () => {
+        UI.startScreenElement.style.display = 'none';
+        UI.connectingMessage.style.display = 'block';
         connectToLobby();
     });
 }
@@ -38,14 +42,14 @@ const connectToLobby = () => {
     const socket = new WebSocket('ws://127.0.0.1:8080');
     socket.addEventListener('open',  () => {
         console.log('Successful connection to lobby');
-        connectingMessage.style.display = 'none';
-        lobbyElement.style.display = 'flex';
+        UI.connectingMessage.style.display = 'none';
+        UI.lobbyElement.style.display = 'flex';
 
         socket.addEventListener('message', (event) => {
             const message = JSON.parse(event.data);
             lobbyServerHandler(socket, message);
         });
-        readyButton.addEventListener('click', () => {
+        UI.readyButton.addEventListener('click', () => {
             isYouReady = !isYouReady;
             socket.send(JSON.stringify({ type: 'readiness', content: isYouReady }));
         });
@@ -81,7 +85,7 @@ const lobbyServerHandler = (socket, message) => {
             disconnectedUserElement.style.display = 'none';
             break;
         case 'getHandCards':
-            lobbyElement.style.display = 'none';
+            UI.lobbyElement.style.display = 'none';
             game(socket, message.content);
             break;
         case 'error':
@@ -91,8 +95,8 @@ const lobbyServerHandler = (socket, message) => {
 }
 
 const game = (socket, handCards) => {
-    slotsArea.style.display = 'grid';
-    tableElement.style.display = 'flex';
+    UI.slotsArea.style.display = 'grid';
+    UI.tableElement.style.display = 'flex';
     socket.addEventListener('message', (event) => {
         const message = JSON.parse(event.data);
         gameServerHandler(socket, message, handCards);
@@ -112,7 +116,7 @@ const gameServerHandler = (socket, message, handCards) => {
             updateUsersBid(message.content);
             break;
         case 'updateBank':
-            bankElement.textContent = `Bank: $` + message.content;
+            UI.bankElement.textContent = `Bank: $` + message.content;
             break;
         case 'getDealer':
             updateDealer(message.content);
@@ -179,7 +183,6 @@ const updateDealer = (dealer) => {
     dealerElement.textContent = 'Dealer';
 }
 
-let currentTurnUserID = 0;
 const updateTurnUser = (turnUserID) => {
     if (currentTurnUserID) {
         const previousGameUserElement = get('gameSlot' + currentTurnUserID);
@@ -193,36 +196,36 @@ const updateTurnUser = (turnUserID) => {
 }
 
 const makeMove = (socket) => {
-    controlPanel.style.display = 'flex';
+    UI.controlPanel.style.display = 'flex';
 
     const handleCall = () => {
-        controlPanel.style.display = 'none';
+        UI.controlPanel.style.display = 'none';
         socket.send(JSON.stringify({ type: 'playerMove', content: { action: 'call' } }));
         removeButtonListeners();
     };
 
     const handleFold = () => {
-        controlPanel.style.display = 'none';
+        UI.controlPanel.style.display = 'none';
         socket.send(JSON.stringify({ type: 'playerMove', content: { action: 'fold' } }));
         removeButtonListeners();
     };
 
     const handleBet = () => {
         const bet = prompt('Enter bet: ');
-        controlPanel.style.display = 'none';
+        UI.controlPanel.style.display = 'none';
         socket.send(JSON.stringify({ type: 'playerMove', content: { action: 'bet', amount: parseInt(bet) } }));
         removeButtonListeners();
     }
 
     const removeButtonListeners = () => {
-        callButton.removeEventListener('click', handleCall);
-        foldButton.removeEventListener('click', handleFold);
-        betButton.removeEventListener('click', handleBet);
+        UI.callButton.removeEventListener('click', handleCall);
+        UI.foldButton.removeEventListener('click', handleFold);
+        UI.betButton.removeEventListener('click', handleBet);
     };
 
-    callButton.addEventListener('click', handleCall);
-    foldButton.addEventListener('click', handleFold);
-    betButton.addEventListener('click', handleBet);
+    UI.callButton.addEventListener('click', handleCall);
+    UI.foldButton.addEventListener('click', handleFold);
+    UI.betButton.addEventListener('click', handleBet);
 }
 
 const updateFoldedUsers = (foldedUserID) => {
@@ -238,20 +241,22 @@ const updateDisconnectedUser = (disconnectedUserID) => {
 }
 
 const updateTable = (tableCards) => {
-    flopCard1Element.src = `images/cards/${tableCards[0].rank}-${tableCards[0].suit}.png`;
-    flopCard2Element.src = `images/cards/${tableCards[1].rank}-${tableCards[1].suit}.png`;
-    flopCard3Element.src = `images/cards/${tableCards[2].rank}-${tableCards[2].suit}.png`;
-    turnCardElement.src = `images/cards/${tableCards[3].rank}-${tableCards[3].suit}.png`;
-    riverCardElement.src = `images/cards/${tableCards[4].rank}-${tableCards[4].suit}.png`;
+    UI.flopCard1Element.src = `images/cards/${tableCards[0].rank}-${tableCards[0].suit}.png`;
+    UI.flopCard2Element.src = `images/cards/${tableCards[1].rank}-${tableCards[1].suit}.png`;
+    UI.flopCard3Element.src = `images/cards/${tableCards[2].rank}-${tableCards[2].suit}.png`;
+    UI.turnCardElement.src = `images/cards/${tableCards[3].rank}-${tableCards[3].suit}.png`;
+    UI.riverCardElement.src = `images/cards/${tableCards[4].rank}-${tableCards[4].suit}.png`;
 }
 
 const gameOverByFold = (winnerID, winnerCards) => {
     const currentTurnUSerElement = get('gameSlot' + currentTurnUserID);
     currentTurnUSerElement.style.background = '';
+
     const winnerElement = get('gameSlot' + winnerID);
+    winnerElement.style.background = 'yellow';
     const winnerFirstCardElement = get('firstCardSlot' + winnerID);
     const winnerSecondCardElement = get('secondCardSlot' + winnerID);
-    winnerElement.style.background = 'yellow';
+
     winnerFirstCardElement.src = `images/cards/${winnerCards[0].rank}-${winnerCards[0].suit}.png`;
     winnerSecondCardElement.src = `images/cards/${winnerCards[1].rank}-${winnerCards[1].suit}.png`;
     alert(`User ${winnerID} won due to all players folding`);
