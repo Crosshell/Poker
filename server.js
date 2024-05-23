@@ -27,18 +27,7 @@ wss.on('connection', (ws) => {
         return;
     }
 
-    users[userID] = {
-        username: `User ${userID}`,
-        isReady: false,
-        ws: ws,
-        cards: [],
-        combination: null,
-        money: START_MONEY,
-        bid: 0,
-        isDealer: false,
-        hasFolded: false
-    };
-
+    users[userID] = createUser(ws, userID);
     ws.userID = userID;
 
     ws.send(JSON.stringify({ type: 'getID', content: userID }));
@@ -50,17 +39,28 @@ wss.on('connection', (ws) => {
     ws.on('message', (message) => {
         const parsedMessage = JSON.parse(message);
         const { type, content } = parsedMessage;
-
         handleMessage(type, content, ws.userID);
+    });
 
-        ws.on('error', (error) => {
-            console.error('WebSocket error:', error);
-        });
+    ws.on('error', (error) => {
+        console.error('WebSocket error:', error);
     });
 
     ws.on('close', () => {
         removeConnection(ws);
     });
+});
+
+const createUser = (ws, userID) => ({
+    username: `User ${userID}`,
+    isReady: false,
+    ws: ws,
+    cards: [],
+    combination: null,
+    money: START_MONEY,
+    bid: 0,
+    isDealer: false,
+    hasFolded: false
 });
 
 const getNextUserID = () => {
@@ -88,18 +88,22 @@ const handleConnectionError = (ws, userID) => {
 const handleMessage = (type, content, userID) => {
     switch (type) {
         case 'readiness':
-            users[userID].isReady = content;
-            const message = JSON.stringify({ type: 'updateReadiness', content: { isReady: content, userID: userID } });
-            broadcast(message);
-            if (Object.keys(users).length >= MIN_PLAYERS && isAllReady()){
-                startGame();
-            }
+            handleReadiness(content, userID);
             break;
         case 'playerMove':
             handleGameRound(content.action, content.amount);
             break;
         default:
             console.warn('Unknown message type:', type);
+    }
+}
+
+const handleReadiness = (isReady, userID) => {
+    users[userID].isReady = isReady;
+    const message = JSON.stringify({ type: 'updateReadiness', content: { isReady: isReady, userID: userID } });
+    broadcast(message);
+    if (Object.keys(users).length >= MIN_PLAYERS && isAllReady()) {
+        startGame();
     }
 }
 
@@ -110,12 +114,7 @@ const broadcast = (message) => {
 }
 
 const isAllReady = () => {
-    for (const userID in users) {
-        if (!users[userID].isReady) {
-            return false;
-        }
-    }
-    return true;
+    return Object.values(users).every(user => user.isReady);
 }
 
 const sendReadyStatusToNewUser = () => {
@@ -135,7 +134,7 @@ const startGame = () => {
     sendUpdateMoney();
     sendUpdateBid();
     sendUpdateBank();
-    getDealer();
+    setDealer();
     doBlinds();
     handlePlayerTurn();
 }
@@ -154,10 +153,7 @@ const sendCardsToUsers = () => {
 }
 
 const sendPlayingUsers = () => {
-    const usersID = [];
-    for (const userID in users) {
-        usersID.push(parseInt(userID));
-    }
+    const usersID = Object.keys(users).map(id => parseInt(id));
     const message = JSON.stringify({ type: 'getPlayingUsers', content: usersID });
     broadcast(message);
 }
@@ -190,77 +186,74 @@ const sendUpdateBank = () => {
     broadcast(message);
 }
 
-const getDealer = () => {
-    const userKeys = Object.keys(users);
-    const randomIndex = Math.floor(Math.random() * userKeys.length);
-    const randomUserID = userKeys[randomIndex];
+const setDealer = () => {
+    const usersID = Object.keys(users);
+    const randomUserID = usersID[Math.floor(Math.random() * usersID.length)];
     users[randomUserID].isDealer = true;
-    const message = JSON.stringify({ type: 'getDealer', content: randomUserID });
+    const message = JSON.stringify({ type: 'setDealer', content: randomUserID });
     broadcast(message)
 }
 
 const doBlinds = () => {
-    let dealer;
-    for (const userID in users) {
-        if (users[userID].isDealer) {
-            dealer = userID;
-            break;
-        }
-    }
+    const usersID = Object.keys(users);
+    const dealerIndex = usersID.findIndex(id => users[id].isDealer);
+    const smallBlindIndex = (dealerIndex + 1) % usersID.length;
+    const bigBlindIndex = (dealerIndex + 2) % usersID.length;
+    const firstMoveIndex = (dealerIndex + 3) % usersID.length;
 
-    const userKeys = Object.keys(users);
-    const dealerIndex = userKeys.indexOf(dealer);
-    const smallBlindIndex = (dealerIndex + 1) % userKeys.length;
-    const bigBlindIndex = (dealerIndex + 2) % userKeys.length;
-    const firstMoveIndex = (dealerIndex + 3) % userKeys.length;
+    applyBlind(usersID[smallBlindIndex], SMALL_BLIND);
+    applyBlind(usersID[bigBlindIndex], BIG_BLIND);
 
-    const smallBlindUser = users[userKeys[smallBlindIndex]];
-    const bigBlindUser = users[userKeys[bigBlindIndex]];
-
-    smallBlindUser.money -= SMALL_BLIND;
-    smallBlindUser.bid += SMALL_BLIND;
-
-    bigBlindUser.money -= BIG_BLIND;
-    bigBlindUser.bid += BIG_BLIND;
-    queue = userKeys.slice(firstMoveIndex).concat(userKeys.slice(0, firstMoveIndex));
+    queue = usersID.slice(firstMoveIndex).concat(usersID.slice(0, firstMoveIndex));
     sendUpdateMoney();
     sendUpdateBid();
     sendUpdateBank();
+}
+
+const applyBlind = (userID, amount) => {
+    users[userID].money -= amount;
+    users[userID].bid += amount;
 }
 
 const handleGameRound = (action, amount) => {
     if (findLastPlayerStanding()) return;
     const result = processPlayerAction(action, amount);
 
-    if (result === null) {
-        return;
-    }
+    if (result === null) return;
 
-    const activeUsers = Object.keys(users).filter(userID => !users[userID].hasFolded);
-    const allBidsEqual = activeUsers.every(userID => users[userID].bid === highestBid);
+    const activeUsers = Object.keys(users).filter(id => !users[id].hasFolded);
+    const allBidsEqual = activeUsers.every(id => users[id].bid === highestBid);
 
     if (allBidsEqual && queue.length === 0) {
-        let currentIndex = STREETS.indexOf(currentStreet);
-        currentStreet = STREETS[currentIndex + 1];
-        const userKeys = Object.keys(users);
-        const leftPlayerFromDealerID = getLeftPlayerFromDealer(userKeys);
-        queue = userKeys
-            .slice(leftPlayerFromDealerID)
-            .concat(userKeys.slice(0, leftPlayerFromDealerID))
-            .filter(userID => !users[userID].hasFolded);
-
-        if (currentStreet === 'Showdown') {
-            showdown();
-        } else {
-            handlePlayerTurn();
-        }
-
-        if (!isFlopCardsSent && currentStreet === 'Flop') sendFlopCards();
-        if (!isTurnCardSent && currentStreet === 'Turn') sendTurnCard();
-        if (!isRiverCardSent && currentStreet === 'River') sendRiverCard();
-        return;
+        proceedToNextStreet();
+    } else {
+        handlePlayerTurn();
     }
-    handlePlayerTurn();
+}
+
+const proceedToNextStreet = () => {
+    const currentIndex = STREETS.indexOf(currentStreet);
+    currentStreet = STREETS[currentIndex + 1];
+    resetQueueToDealerLeft();
+
+    if (currentStreet === 'Showdown') {
+        showdown();
+    } else {
+        handlePlayerTurn();
+    }
+
+    if (!isFlopCardsSent && currentStreet === 'Flop') sendFlopCards();
+    if (!isTurnCardSent && currentStreet === 'Turn') sendTurnCard();
+    if (!isRiverCardSent && currentStreet === 'River') sendRiverCard();
+}
+
+const resetQueueToDealerLeft = () => {
+    const usersID = Object.keys(users);
+    const leftPlayerFromDealerID = getLeftPlayerFromDealer(usersID);
+    queue = usersID
+        .slice(leftPlayerFromDealerID)
+        .concat(usersID.slice(0, leftPlayerFromDealerID))
+        .filter(id => !users[id].hasFolded);
 }
 
 const processPlayerAction = (action, amount) => {
@@ -271,37 +264,9 @@ const processPlayerAction = (action, amount) => {
         const message = JSON.stringify({ type: 'foldedUser', content: currentUserID });
         broadcast(message);
     } else if (action === 'call') {
-        const callAmount = highestBid - users[currentUserID].bid;
-        if (users[currentUserID].money - callAmount < 0) {
-            users[currentUserID].bid = users[currentUserID].money + users[currentUserID].bid;
-            users[currentUserID].money = 0;
-        } else {
-            users[currentUserID].money -= callAmount;
-            users[currentUserID].bid += callAmount;
-        }
-
+        callBet(currentUserID);
     } else if (action === 'bet') {
-        if (users[currentUserID].money < amount){
-            const message = JSON.stringify({ type: 'betError', content: 'The bet must be less than the amount of your money' });
-            users[currentUserID].ws.send(message);
-            queue.unshift(currentUserID);
-            handlePlayerTurn();
-            return null;
-        } else if (amount + users[currentUserID].bid <= highestBid) {
-            const message = JSON.stringify({ type: 'betError', content: 'The bid must be greater than the current highest bid' });
-            users[currentUserID].ws.send(message);
-            queue.unshift(currentUserID);
-            handlePlayerTurn();
-            return null;
-        }
-        highestBid = amount + users[currentUserID].bid;
-        users[currentUserID].money -= amount;
-        users[currentUserID].bid += amount;
-        const userKeys = Object.keys(users);
-        queue = userKeys
-            .slice(currentUserID)
-            .concat(userKeys.slice(0, currentUserID))
-            .filter(userID => !users[userID].hasFolded);
+        if (!placeBet(currentUserID, amount)) return null;
     } else {
         return null;
     }
@@ -309,6 +274,47 @@ const processPlayerAction = (action, amount) => {
     sendUpdateMoney();
     sendUpdateBid();
     sendUpdateBank();
+}
+
+const callBet = (currentUserID) => {
+    const callAmount = highestBid - users[currentUserID].bid;
+    if (users[currentUserID].money < callAmount) {
+        users[currentUserID].bid += users[currentUserID].money;
+        users[currentUserID].money = 0;
+    } else {
+        users[currentUserID].money -= callAmount;
+        users[currentUserID].bid += callAmount;
+    }
+}
+
+const placeBet = (currentUserID, amount) => {
+    if (users[currentUserID].money < amount){
+        const message = JSON.stringify({ type: 'betError', content: 'The bet must be less than the amount of your money' });
+        users[currentUserID].ws.send(message);
+        queue.unshift(currentUserID);
+        handlePlayerTurn();
+        return false;
+    }
+    if (amount + users[currentUserID].bid <= highestBid) {
+        const message = JSON.stringify({ type: 'betError', content: 'The bid must be greater than the current highest bid' });
+        users[currentUserID].ws.send(message);
+        queue.unshift(currentUserID);
+        handlePlayerTurn();
+        return false;
+    }
+    highestBid = amount + users[currentUserID].bid;
+    users[currentUserID].money -= amount;
+    users[currentUserID].bid += amount;
+    resetQueue(currentUserID);
+    return true;
+}
+
+const resetQueue = (currentUserID) => {
+    const usersID = Object.keys(users);
+    queue = usersID
+        .slice(currentUserID)
+        .concat(usersID.slice(0, currentUserID))
+        .filter(userID => !users[userID].hasFolded);
 }
 
 const showdown = () => {
@@ -325,9 +331,9 @@ const showdown = () => {
     const notFoldedUsers = Object.fromEntries(
         Object.entries(users).filter(([_, user]) => !user.hasFolded)
     );
-
     const winnersID = checkWinner(notFoldedUsers);
     const dividedMoney = Math.floor(bank / winnersID.length);
+
     for (const winnerID of winnersID) {
         users[winnerID].money += dividedMoney;
     }
@@ -335,6 +341,7 @@ const showdown = () => {
     bank = 0;
     sendUpdateMoney();
     sendUpdateBank();
+
     const message = JSON.stringify({
         type: 'gameOver',
         content: {
@@ -368,18 +375,13 @@ const findLastPlayerStanding = () => {
     return false;
 }
 
-const getLeftPlayerFromDealer = (userKeys) => {
-    let dealerID;
-    for (const userID in users) {
-        if (users[userID].isDealer) {
-            dealerID = userID;
-            break;
-        }
-    }
-    const dealerIndex = userKeys.indexOf(dealerID);
-    let leftPlayerFromDealerIndex = (dealerIndex + 1) % userKeys.length;
-    while (users[userKeys[leftPlayerFromDealerIndex]].hasFolded) {
-        leftPlayerFromDealerIndex = (leftPlayerFromDealerIndex + 1) % userKeys.length;
+const getLeftPlayerFromDealer = (usersID) => {
+    const dealerID = usersID.find(id => users[id].isDealer);
+    const dealerIndex = usersID.indexOf(dealerID);
+
+    let leftPlayerFromDealerIndex = (dealerIndex + 1) % usersID.length;
+    while (users[usersID[leftPlayerFromDealerIndex]].hasFolded) {
+        leftPlayerFromDealerIndex = (leftPlayerFromDealerIndex + 1) % usersID.length;
     }
     return leftPlayerFromDealerIndex;
 }

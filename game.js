@@ -118,7 +118,7 @@ const gameServerHandler = (socket, message, handCards) => {
         case 'updateBank':
             UI.bankElement.textContent = `Bank: $` + message.content;
             break;
-        case 'getDealer':
+        case 'setDealer':
             updateDealer(message.content);
             break;
         case 'turn':
@@ -263,6 +263,7 @@ const gameOverByFold = (winnerID, winnerCards) => {
 }
 
 const gameOver = (winnersID, usersCombinations, usersCards) => {
+    console.dir({winnersID: winnersID, usersCombinations: usersCombinations, usersCards: usersCards}, {depth: null});
     const currentTurnUSerElement = get('gameSlot' + currentTurnUserID);
     currentTurnUSerElement.style.background = '';
     for (const winnerID of winnersID) {
