@@ -2,10 +2,8 @@ import {MAX_COMBINATION_SIZE, RANKS} from "./constants.js";
 
 
 const checkRoyalFlush = (straightCards) => {
-    if (straightCards && isSameSuit(straightCards)) {
-        if (straightCards[0].rank === '10') {
-            return { name: 'Royal flush', cards: straightCards };
-        }
+    if (straightCards && isSameSuit(straightCards) && straightCards[0].rank === '10') {
+        return { name: 'Royal flush', cards: straightCards };
     }
     return null;
 }
@@ -20,19 +18,18 @@ const checkStraightFlush = (straightCards) => {
 const checkFourKind = (cards, ranksCount) => {
     for (const rank in ranksCount){
         if (ranksCount[rank] === 4){
-            const fourOfAKindRank = rank;
-            const fourOfAKindCards = cards.filter(card => card.rank === fourOfAKindRank);
+            const fourOfAKindCards = cards.filter(card => card.rank === rank);
             return { name: 'Four of a kind', cards: fourOfAKindCards };
         }
     }
     return null;
 }
 
-const checkFullHouse = (cards, tripleCards, doubleCards) => {
-    if (tripleCards && doubleCards) {
-        const tripleCardsArray = cards.filter(card => card.rank === tripleCards);
-        const doubleCardsArray = cards.filter(card => card.rank === doubleCards);
-        return { name: 'Full house', cards: [...tripleCardsArray, ...doubleCardsArray] };
+const checkFullHouse = (cards, tripleRank, pairRank) => {
+    if (tripleRank && pairRank) {
+        const tripleCardsArray = cards.filter(card => card.rank === tripleRank);
+        const pairCardsArray = cards.filter(card => card.rank === pairRank);
+        return { name: 'Full house', cards: [...tripleCardsArray, ...pairCardsArray] };
     }
     return null;
 }
@@ -41,8 +38,9 @@ const checkFlush = (cards, suitsCount) => {
     for (const suit in suitsCount) {
         if (suitsCount[suit] >= MAX_COMBINATION_SIZE) {
             const flushCards = cards.filter(card => card.suit === suit);
-            const lastFlushCards  = flushCards.slice(-MAX_COMBINATION_SIZE);
-            return { name: 'Flush', cards: lastFlushCards };
+            flushCards.reverse();
+            const highestFlushCards  = flushCards.slice(0, MAX_COMBINATION_SIZE);
+            return { name: 'Flush', cards: highestFlushCards };
         }
     }
     return null;
@@ -55,27 +53,28 @@ const checkStraight = (straightCards) => {
     return null;
 }
 
-const checkThreeKind = (cards, tripleCards) => {
-    if (tripleCards) {
-        const tripleCardsArray = cards.filter(card => card.rank === tripleCards);
+const checkThreeKind = (cards, tripleRank) => {
+    if (tripleRank) {
+        const tripleCardsArray = cards.filter(card => card.rank === tripleRank);
         return { name: 'Three of a kind', cards: tripleCardsArray };
     }
     return null;
 }
 
-const checkTwoPair = (cards, doubleCards, prevDoubleCards) => {
-    if (prevDoubleCards !== doubleCards && prevDoubleCards && doubleCards) {
-        const doubleCardsArray = cards.filter(card => card.rank === doubleCards);
-        const prevDoubleCardsArray = cards.filter(card => card.rank === prevDoubleCards);
-        return { name: 'Two pair', cards: [...doubleCardsArray, ...prevDoubleCardsArray] };
+const checkTwoPair = (cards, pairRanks) => {
+    if (pairRanks.length === 2) {
+        const [firstPairRank, secondPairRank] = pairRanks;
+        const firstPairCards = cards.filter(card => card.rank === firstPairRank);
+        const secondPairCards = cards.filter(card => card.rank === secondPairRank);
+        return { name: 'Two pair', cards: [...firstPairCards, ...secondPairCards] };
     }
     return null;
 }
 
-const checkPair = (cards, doubleCards) => {
-    if (doubleCards) {
-        const doubleCardsArray = cards.filter(card => card.rank === doubleCards);
-        return { name: 'Pair', cards: doubleCardsArray };
+const checkPair = (cards, pairRank) => {
+    if (pairRank) {
+        const pairCardsArray = cards.filter(card => card.rank === pairRank);
+        return { name: 'Pair', cards: pairCardsArray };
     }
     return null;
 }
@@ -85,10 +84,10 @@ const getSortedByRanks = (cardsToSort) => {
 }
 
 const getUniqueRanks = (sortedRanks) => {
-    const uniqueRanks = {};
+    const uniqueRanks = new Set();
     return sortedRanks.filter(card => {
-        if (!uniqueRanks[card.rank]) {
-            uniqueRanks[card.rank] = true;
+        if (!uniqueRanks.has(card.rank)) {
+            uniqueRanks.add(card.rank);
             return true;
         }
         return false;
@@ -118,93 +117,56 @@ const getStraightCards = (uniqueRanksArray) => {
 }
 
 const isSameSuit = (straightCards) => {
-    if (straightCards.length === MAX_COMBINATION_SIZE) {
-        for (let i = 0; i < straightCards.length; i++) {
-            if (straightCards[0].suit !== straightCards[i].suit) {
-                return false;
-            }
-        }
-        return true;
-    }
-    return false;
+    return straightCards.every(card => card.suit === straightCards[0].suit);
 }
 
-const getTripleCards = (ranksCount) => {
-    let tripleCards = null;
+const getTripleAndPairs = (ranksCount) => {
+    let tripleRank = null;
+    let pairRanks = [];
     for (const rank in ranksCount) {
         if (ranksCount[rank] === 3) {
-            tripleCards = rank;
+            tripleRank = rank;
         }
-    }
-    return tripleCards;
-}
-
-const getDoubleCards = (ranksCount) => {
-    let doubleCards = null;
-    for (const rank in ranksCount) {
         if (ranksCount[rank] === 2) {
-            doubleCards = rank;
+            pairRanks.unshift(rank);
         }
     }
-    return doubleCards;
-}
+    const highestTwoPairs = pairRanks.slice(0, 2);
 
-const getPrevDoubleCards = (ranksCount) => {
-    let curDoubleCards = null;
-    let prevDoubleCards = null;
-    for (const rank in ranksCount) {
-        if (ranksCount[rank] === 2){
-            prevDoubleCards = curDoubleCards;
-            curDoubleCards = rank;
-        }
-    }
-    return prevDoubleCards;
+    return { tripleRank, pairRanks: highestTwoPairs };
 }
 
 export const checkHighestCombination = (userCards, tableCards) => {
-    let cards = [...tableCards, ...userCards];
-    cards = getSortedByRanks(cards);
+    let allCards = [...tableCards, ...userCards];
+    allCards = getSortedByRanks(allCards);
     const ranksCount = {};
     const suitsCount = {};
 
-    for (const card of cards) {
-        ranksCount[card.rank] = ranksCount[card.rank] + 1 || 1;
-        suitsCount[card.suit] = suitsCount[card.suit] + 1 || 1;
+    for (const card of allCards) {
+        ranksCount[card.rank] = (ranksCount[card.rank] || 0) + 1;
+        suitsCount[card.suit] = (suitsCount[card.suit] || 0) + 1;
     }
 
-    const uniqueRanksArray = getUniqueRanks(cards);
+    const uniqueRanksArray = getUniqueRanks(allCards);
     const straightCards = getStraightCards(uniqueRanksArray);
-    const tripleCards = getTripleCards(ranksCount);
-    const doubleCards = getDoubleCards(ranksCount);
-    const prevDoubleCards = getPrevDoubleCards(ranksCount);
+    const { tripleRank, pairRanks } = getTripleAndPairs(ranksCount);
 
-    let combination = checkRoyalFlush(straightCards);
-    if (combination) return combination;
+    const checks = [
+        () => checkRoyalFlush(straightCards),
+        () => checkStraightFlush(straightCards),
+        () => checkFourKind(allCards, ranksCount),
+        () => checkFullHouse(allCards, tripleRank, pairRanks[0]),
+        () => checkFlush(allCards, suitsCount),
+        () => checkStraight(straightCards),
+        () => checkThreeKind(allCards, tripleRank),
+        () => checkTwoPair(allCards, pairRanks),
+        () => checkPair(allCards, pairRanks[0])
+    ];
 
-    combination = checkStraightFlush(straightCards);
-    if (combination) return combination;
+    for (const check of checks) {
+        const combination = check();
+        if (combination) return combination;
+    }
 
-    combination = checkFourKind(cards, ranksCount);
-    if (combination) return combination;
-
-    combination = checkFullHouse(cards, tripleCards, doubleCards);
-    if (combination) return combination;
-
-    combination = checkFlush(cards, suitsCount)
-    if (combination) return combination;
-
-    combination = checkStraight(straightCards);
-    if (combination) return combination;
-
-    combination = checkThreeKind(cards, tripleCards);
-    if (combination) return combination;
-
-    combination = checkTwoPair(cards, doubleCards, prevDoubleCards);
-    if (combination) return combination;
-
-    combination = checkPair(cards, doubleCards);
-    if (combination) return combination;
-
-    combination = { name: 'High card', cards: [userCards[0], userCards[1]] }
-    return combination;
+    return { name: 'High card', cards: userCards };
 }
