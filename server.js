@@ -91,7 +91,7 @@ const handleMessage = (type, content, userID) => {
             handleReadiness(content, userID);
             break;
         case 'playerMove':
-            handleGameRound(content.action, content.amount);
+            handleGameRound(content.action, content.amount, userID);
             break;
         default:
             console.warn('Unknown message type:', type);
@@ -215,7 +215,9 @@ const applyBlind = (userID, amount) => {
     users[userID].bid += amount;
 }
 
-const handleGameRound = (action, amount) => {
+const handleGameRound = (action, amount, userID) => {
+    if (userID !== parseInt(queue[0])) return;
+
     if (findLastPlayerStanding()) return;
     const result = processPlayerAction(action, amount);
 
@@ -320,20 +322,17 @@ const resetQueue = (currentUserID) => {
 const showdown = () => {
     const usersCombination = {};
     const usersCards = {};
-    const notFoldedUsers = [];
+    const notFoldedUsers = {};
     for (const userID in users) {
-        if (!users[userID].hasFolded){
+        if (!users[userID].hasFolded) {
             users[userID].combination = checkHighestCombination(users[userID].cards, tableCards);
             usersCombination[userID] = users[userID].combination;
             usersCards[userID] = users[userID].cards;
-            notFoldedUsers.push(users[userID]);
+            notFoldedUsers[userID] = users[userID];
         }
     }
 
-
     let winnersID = checkWinner(notFoldedUsers);
-    winnersID = winnersID.map(winner => parseInt(winner) + 1);
-
     const dividedMoney = Math.floor(bank / winnersID.length);
 
     for (const winnerID of winnersID) {
@@ -363,7 +362,7 @@ const handlePlayerTurn = () => {
 };
 
 const findLastPlayerStanding = () => {
-    const activeUsers = Object.keys(users).filter(userID => !users[userID].hasFolded)
+    const activeUsers = Object.keys(users).filter(userID => !users[userID].hasFolded);
     if (activeUsers.length === 1) {
         const winnerID = activeUsers[0];
         users[winnerID].money += bank;

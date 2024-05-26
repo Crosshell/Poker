@@ -1,5 +1,6 @@
-import {COMBINATIONS, FIRST_CARD_CHECK, RANKS} from "./constants.js";
+'use strict';
 
+import {COMBINATIONS, FIRST_CARD_CHECK, RANKS} from "./constants.js";
 
 const kickerCardWinner = (users, winners) => {
     let highestRankIndex = 0;
@@ -55,6 +56,7 @@ export const checkWinner = (users) => {
     }
 
     let winners = Object.keys(users).filter(user => COMBINATIONS.indexOf(users[user].combination.name) === highestComboIndex);
+
     const highestComboName = COMBINATIONS[highestComboIndex];
 
     if (winners.length > 1) {

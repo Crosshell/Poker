@@ -97,6 +97,7 @@ const lobbyServerHandler = (socket, message) => {
 const game = (socket, handCards) => {
     UI.slotsArea.style.display = 'grid';
     UI.tableElement.style.display = 'flex';
+    UI.controlPanel.style.display = 'flex';
     socket.addEventListener('message', (event) => {
         const message = JSON.parse(event.data);
         gameServerHandler(socket, message, handCards);
@@ -196,23 +197,18 @@ const updateTurnUser = (turnUserID) => {
 }
 
 const makeMove = (socket) => {
-    UI.controlPanel.style.display = 'flex';
-
     const handleCall = () => {
-        UI.controlPanel.style.display = 'none';
         socket.send(JSON.stringify({ type: 'playerMove', content: { action: 'call' } }));
         removeButtonListeners();
     };
 
     const handleFold = () => {
-        UI.controlPanel.style.display = 'none';
         socket.send(JSON.stringify({ type: 'playerMove', content: { action: 'fold' } }));
         removeButtonListeners();
     };
 
     const handleBet = () => {
         const bet = prompt('Enter bet: ');
-        UI.controlPanel.style.display = 'none';
         socket.send(JSON.stringify({ type: 'playerMove', content: { action: 'bet', amount: parseInt(bet) } }));
         removeButtonListeners();
     }
