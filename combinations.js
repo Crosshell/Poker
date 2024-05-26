@@ -25,10 +25,10 @@ const checkFourKind = (cards, ranksCount) => {
     return null;
 }
 
-const checkFullHouse = (cards, tripleRank, pairRank) => {
-    if (tripleRank && pairRank) {
-        const tripleCardsArray = cards.filter(card => card.rank === tripleRank);
-        const pairCardsArray = cards.filter(card => card.rank === pairRank);
+const checkFullHouse = (cards, tripleRanks, pairRank) => {
+    if (tripleRanks.length > 0 && (pairRank || tripleRanks.length > 1)) {
+        const tripleCardsArray = cards.filter(card => card.rank === tripleRanks[0]);
+        const pairCardsArray = cards.filter(card => card.rank === (pairRank || tripleRanks[1]));
         return { name: 'Full house', cards: [...tripleCardsArray, ...pairCardsArray] };
     }
     return null;
@@ -121,11 +121,11 @@ const isSameSuit = (straightCards) => {
 }
 
 const getTripleAndPairs = (ranksCount) => {
-    let tripleRank = null;
+    let tripleRanks = [];
     let pairRanks = [];
     for (const rank in ranksCount) {
         if (ranksCount[rank] === 3) {
-            tripleRank = rank;
+            tripleRanks.unshift(rank);
         }
         if (ranksCount[rank] === 2) {
             pairRanks.unshift(rank);
@@ -133,7 +133,7 @@ const getTripleAndPairs = (ranksCount) => {
     }
     const highestTwoPairs = pairRanks.slice(0, 2);
 
-    return { tripleRank, pairRanks: highestTwoPairs };
+    return { tripleRanks, pairRanks: highestTwoPairs };
 }
 
 export const checkHighestCombination = (userCards, tableCards) => {
@@ -149,16 +149,16 @@ export const checkHighestCombination = (userCards, tableCards) => {
 
     const uniqueRanksArray = getUniqueRanks(allCards);
     const straightCards = getStraightCards(uniqueRanksArray);
-    const { tripleRank, pairRanks } = getTripleAndPairs(ranksCount);
+    const { tripleRanks, pairRanks } = getTripleAndPairs(ranksCount);
 
     const checks = [
         () => checkRoyalFlush(straightCards),
         () => checkStraightFlush(straightCards),
         () => checkFourKind(allCards, ranksCount),
-        () => checkFullHouse(allCards, tripleRank, pairRanks[0]),
+        () => checkFullHouse(allCards, tripleRanks, pairRanks[0]),
         () => checkFlush(allCards, suitsCount),
         () => checkStraight(straightCards),
-        () => checkThreeKind(allCards, tripleRank),
+        () => checkThreeKind(allCards, tripleRanks[0]),
         () => checkTwoPair(allCards, pairRanks),
         () => checkPair(allCards, pairRanks[0])
     ];
