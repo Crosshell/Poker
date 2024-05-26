@@ -320,18 +320,20 @@ const resetQueue = (currentUserID) => {
 const showdown = () => {
     const usersCombination = {};
     const usersCards = {};
+    const notFoldedUsers = [];
     for (const userID in users) {
         if (!users[userID].hasFolded){
             users[userID].combination = checkHighestCombination(users[userID].cards, tableCards);
             usersCombination[userID] = users[userID].combination;
             usersCards[userID] = users[userID].cards;
+            notFoldedUsers.push(users[userID]);
         }
     }
 
-    const notFoldedUsers = Object.fromEntries(
-        Object.entries(users).filter(([_, user]) => !user.hasFolded)
-    );
-    const winnersID = checkWinner(notFoldedUsers);
+
+    let winnersID = checkWinner(notFoldedUsers);
+    winnersID = winnersID.map(winner => parseInt(winner) + 1);
+
     const dividedMoney = Math.floor(bank / winnersID.length);
 
     for (const winnerID of winnersID) {
