@@ -2,8 +2,8 @@
 
 import { WebSocketServer } from 'ws';
 import { Deck } from './deck.js';
-import { MIN_PLAYERS, MAX_PLAYERS, SMALL_BLIND, BIG_BLIND, START_MONEY, FLOP_CARDS_COUNT, STREETS, PORT } from './constants.js';
-import { dealUserCards } from './user.js';
+import { MIN_PLAYERS, MAX_PLAYERS, SMALL_BLIND, BIG_BLIND, FLOP_CARDS_COUNT, STREETS, PORT } from './constants.js';
+import { User } from './user.js';
 import { checkHighestCombination } from './combinations.js'
 import { checkWinner } from "./winner.js";
 
@@ -27,7 +27,7 @@ wss.on('connection', (ws) => {
         return;
     }
 
-    users[userID] = createUser(ws, userID);
+    users[userID] = new User(ws);
     ws.userID = userID;
 
     ws.send(JSON.stringify({ type: 'getID', content: userID }));
@@ -49,18 +49,6 @@ wss.on('connection', (ws) => {
     ws.on('close', () => {
         removeConnection(ws);
     });
-});
-
-const createUser = (ws, userID) => ({
-    username: `User ${userID}`,
-    isReady: false,
-    ws: ws,
-    cards: [],
-    combination: null,
-    money: START_MONEY,
-    bid: 0,
-    isDealer: false,
-    hasFolded: false
 });
 
 const getNextUserID = () => {
@@ -129,7 +117,6 @@ const startGame = () => {
     deck.generate();
     deck.shuffle();
     dealCardsToUsers();
-    sendCardsToUsers();
     sendPlayingUsers();
     sendUpdateMoney();
     sendUpdateBid();
@@ -140,13 +127,8 @@ const startGame = () => {
 }
 
 const dealCardsToUsers = () => {
-    for (const user in users) {
-        users[user].cards = dealUserCards(deck);
-    }
-}
-
-const sendCardsToUsers = () => {
     for (const userID in users) {
+        deck.dealUserCards(users[userID]);
         const message = JSON.stringify({ type: 'getHandCards', content: users[userID].cards });
         users[userID].ws.send(message);
     }

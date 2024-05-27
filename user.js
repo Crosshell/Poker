@@ -1,11 +1,14 @@
-import {MAX_HAND_SIZE, RANKS} from "./constants.js";
+import { START_MONEY } from "./constants.js";
 
-export const dealUserCards = (deck) => {
-    const cards = [];
-    for (let i = 0; i < MAX_HAND_SIZE; i++) {
-        const card = deck.deal();
-        cards.push(card);
+export class User {
+    constructor(ws) {
+        this.isReady = false;
+        this.ws = ws;
+        this.cards = [];
+        this.combination = null;
+        this.money = START_MONEY;
+        this.bid = 0;
+        this.isDealer = false;
+        this.hasFolded = false;
     }
-    cards.sort((a, b) => RANKS.indexOf(b.rank) - RANKS.indexOf(a.rank));
-    return cards;
 }

@@ -1,7 +1,7 @@
 'use strict';
 
 import {Card} from './card.js';
-import {RANKS, SUITS} from './constants.js';
+import {MAX_HAND_SIZE, RANKS, SUITS} from './constants.js';
 
 export class Deck {
     constructor() {
@@ -23,6 +23,15 @@ export class Deck {
     }
     deal() {
         return this.deck.pop();
+    }
+    dealUserCards(user) {
+        const cards = [];
+        for (let i = 0; i < MAX_HAND_SIZE; i++) {
+            const card = this.deal();
+            cards.push(card);
+        }
+        cards.sort((a, b) => RANKS.indexOf(b.rank) - RANKS.indexOf(a.rank));
+        user.cards = cards;
     }
 }
 
