@@ -2,12 +2,12 @@
 
 import { WebSocketServer } from 'ws';
 import { Deck } from './deck.js';
-import { MIN_PLAYERS, MAX_PLAYERS, SMALL_BLIND, BIG_BLIND, START_MONEY, FLOP_CARDS_COUNT, STREETS } from './constants.js';
+import { MIN_PLAYERS, MAX_PLAYERS, SMALL_BLIND, BIG_BLIND, START_MONEY, FLOP_CARDS_COUNT, STREETS, PORT } from './constants.js';
 import { dealUserCards } from './user.js';
 import { checkHighestCombination } from './combinations.js'
 import { checkWinner } from "./winner.js";
 
-const wss = new WebSocketServer({ port: 8080 });
+const wss = new WebSocketServer({ port: PORT });
 const users = {};
 const deck = new Deck();
 const tableCards = [];

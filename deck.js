@@ -1,3 +1,5 @@
+'use strict';
+
 import {Card} from './card.js';
 import {RANKS, SUITS} from './constants.js';
 

@@ -1,7 +1,8 @@
 'use strict';
 
-const get = (id) => document.getElementById(id);
+import { HOST, PORT } from './constants.js';
 
+const get = (id) => document.getElementById(id);
 let yourID = 0;
 let isYouReady = false;
 let currentTurnUserID = 0;
@@ -39,7 +40,7 @@ const startScreen = () => {
 }
 
 const connectToLobby = () => {
-    const socket = new WebSocket('ws://127.0.0.1:8080');
+    const socket = new WebSocket(HOST + ':' + PORT);
     socket.addEventListener('open',  () => {
         console.log('Successful connection to lobby');
         UI.connectingMessage.style.display = 'none';
@@ -161,8 +162,8 @@ const showPlayers = (usersToShow) => {
 const showYourHandCards = (handCards) => {
     const firstHandCardElement = get('firstCardSlot' + yourID);
     const secondHandCardElement = get('secondCardSlot' + yourID);
-    firstHandCardElement.src = `images/cards/${handCards[0].rank}-${handCards[0].suit}.png`;
-    secondHandCardElement.src = `images/cards/${handCards[1].rank}-${handCards[1].suit}.png`;
+    firstHandCardElement.src = handCards[0].image;
+    secondHandCardElement.src = handCards[1].image;
 }
 
 const updateUsersMoney = (usersMoney) => {
@@ -237,11 +238,11 @@ const updateDisconnectedUser = (disconnectedUserID) => {
 }
 
 const updateTable = (tableCards) => {
-    UI.flopCard1Element.src = `images/cards/${tableCards[0].rank}-${tableCards[0].suit}.png`;
-    UI.flopCard2Element.src = `images/cards/${tableCards[1].rank}-${tableCards[1].suit}.png`;
-    UI.flopCard3Element.src = `images/cards/${tableCards[2].rank}-${tableCards[2].suit}.png`;
-    UI.turnCardElement.src = `images/cards/${tableCards[3].rank}-${tableCards[3].suit}.png`;
-    UI.riverCardElement.src = `images/cards/${tableCards[4].rank}-${tableCards[4].suit}.png`;
+    UI.flopCard1Element.src = tableCards[0].image;
+    UI.flopCard2Element.src = tableCards[1].image;
+    UI.flopCard3Element.src = tableCards[2].image;
+    UI.turnCardElement.src = tableCards[3].image;
+    UI.riverCardElement.src = tableCards[4].image;
 }
 
 const gameOverByFold = (winnerID, winnerCards) => {
@@ -253,8 +254,8 @@ const gameOverByFold = (winnerID, winnerCards) => {
     const winnerFirstCardElement = get('firstCardSlot' + winnerID);
     const winnerSecondCardElement = get('secondCardSlot' + winnerID);
 
-    winnerFirstCardElement.src = `images/cards/${winnerCards[0].rank}-${winnerCards[0].suit}.png`;
-    winnerSecondCardElement.src = `images/cards/${winnerCards[1].rank}-${winnerCards[1].suit}.png`;
+    winnerFirstCardElement.src = winnerCards[0].image;
+    winnerSecondCardElement.src = winnerCards[1].image;
     alert(`User ${winnerID} won due to all players folding`);
 }
 
