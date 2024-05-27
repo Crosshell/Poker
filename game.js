@@ -58,44 +58,42 @@ const connectToLobby = () => {
 }
 
 const lobbyServerHandler = (socket, message) => {
-    switch (message.type) {
-        case 'getID':
-            yourID = message.content;
-            break;
-        case 'newConnect':
-            const connectedUsers = message.content;
-            for (const userID of connectedUsers) {
-                const connectedUserElement = get('lobbySlot' + userID);
-                connectedUserElement.style.display = 'flex';
-            }
-            break;
-        case 'updateReadiness':
-            const isUserReady = message.content.isReady;
-            const userID = message.content.userID;
-            const userLobbyElement = get('lobbySlot' + userID);
-            const readiness = isUserReady ? 'Ready' : 'Not Ready';
-            if (userID === yourID) {
-                userLobbyElement.textContent = `User ${userID} (You): ${readiness}`;
-            } else {
-                userLobbyElement.textContent = `User ${userID}: ${readiness}`;
-            }
-            break;
-        case 'userLobbyDisconnected':
-            const disconnectedUserID = message.content;
-            const disconnectedUserElement = get('lobbySlot' + disconnectedUserID);
+    const handlers = {
+        'getID': (content) => { yourID = content; },
+        'newConnect': (content) => { updateConnectedUsers(content); },
+        'updateReadiness': (content) => { updateReadiness(content.isReady, content.userID); },
+        'userLobbyDisconnected': (content) => {
+            const disconnectedUserElement = get('lobbySlot' + content);
             disconnectedUserElement.style.display = 'none';
-            break;
-        case 'getHandCards':
-            UI.lobbyElement.style.display = 'none';
-            game(socket, message.content);
-            break;
-        case 'error':
-            alert(message.content);
-            break;
+        },
+        'getHandCards': (content) => { game(socket, content); },
+        'error': (content) => { alert(content); },
+    };
+
+    if (handlers[message.type]) {
+        handlers[message.type](message.content);
+    }
+};
+
+const updateConnectedUsers = (connectedUsers) => {
+    for (const userID of connectedUsers) {
+        const connectedUserElement = get('lobbySlot' + userID);
+        connectedUserElement.style.display = 'flex';
+    }
+}
+
+const updateReadiness = (isUserReady, userID) => {
+    const userLobbyElement = get('lobbySlot' + userID);
+    const readiness = isUserReady ? 'Ready' : 'Not Ready';
+    if (userID === yourID) {
+        userLobbyElement.textContent = `User ${userID} (You): ${readiness}`;
+    } else {
+        userLobbyElement.textContent = `User ${userID}: ${readiness}`;
     }
 }
 
 const game = (socket, handCards) => {
+    UI.lobbyElement.style.display = 'none';
     UI.slotsArea.style.display = 'grid';
     UI.tableElement.style.display = 'flex';
     UI.controlPanel.style.display = 'flex';
@@ -106,47 +104,31 @@ const game = (socket, handCards) => {
 }
 
 const gameServerHandler = (socket, message, handCards) => {
-    switch (message.type) {
-        case 'getPlayingUsers':
-            showPlayers(message.content);
+    const handlers = {
+        'getPlayingUsers': (content) => {
+            showPlayers(content);
             showYourHandCards(handCards);
-            break;
-        case 'updateMoney':
-            updateUsersMoney(message.content);
-            break;
-        case 'updateBid':
-            updateUsersBid(message.content);
-            break;
-        case 'updateBank':
-            UI.bankElement.textContent = `Bank: $` + message.content;
-            break;
-        case 'setDealer':
-            updateDealer(message.content);
-            break;
-        case 'turn':
-            updateTurnUser(message.content);
-            if (message.content === yourID) makeMove(socket);
-            break;
-        case 'betError':
-            alert(message.content);
-            break;
-        case 'foldedUser':
-            updateFoldedUsers(message.content);
-            break;
-        case 'updateTable':
-            updateTable(message.content);
-            break;
-        case 'gameOverByFold':
-            gameOverByFold(message.content.winnerID, message.content.winnerCards);
-            break;
-        case 'userGameDisconnected':
-            updateDisconnectedUser(message.content);
-            break;
-        case 'gameOver':
-            gameOver(message.content.winners, message.content.usersCombination, message.content.usersCards);
-            break;
+        },
+        'updateMoney': (content) => { updateUsersMoney(content); },
+        'updateBid': (content) => { updateUsersBid(content); },
+        'updateBank': (content) => { UI.bankElement.textContent = `Bank: $` + content; },
+        'setDealer': (content) => { updateDealer(content); },
+        'turn': (content) => {
+            updateTurnUser(content);
+            if (content === yourID) makeMove(socket);
+        },
+        'betError': (content) => { alert(content); },
+        'foldedUser': (content) => { updateFoldedUsers(content); },
+        'updateTable': (content) => { updateTable(content); },
+        'gameOverByFold': (content) => { gameOverByFold(content.winnerID, content.winnerCards); },
+        'userGameDisconnected': (content) => { updateDisconnectedUser(content); },
+        'gameOver': (content) => { gameOver(content.winners, content.usersCombination, content.usersCards); },
+    };
+
+    if (handlers[message.type]) {
+        handlers[message.type](message.content);
     }
-}
+};
 
 const showPlayers = (usersToShow) => {
     for (const userID of usersToShow) {
