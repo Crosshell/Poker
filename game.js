@@ -254,8 +254,8 @@ const gameOver = (winnersID, usersCombinations, usersCards) => {
         const firstHandCardElement = get('firstCardSlot' + userID);
         const secondHandCardElement = get('secondCardSlot' + userID);
         combinationElement.textContent = usersCombinations[userID].name;
-        firstHandCardElement.src = `images/cards/${usersCards[userID][0].rank}-${usersCards[userID][0].suit}.png`;
-        secondHandCardElement.src = `images/cards/${usersCards[userID][1].rank}-${usersCards[userID][1].suit}.png`;
+        firstHandCardElement.src = usersCards[userID][0].image;
+        secondHandCardElement.src = usersCards[userID][1].image;
     }
     alert(`WINNER IS User ${winnersID} with ${usersCombinations[winnersID[0]].name}`);
 }

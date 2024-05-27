@@ -96,8 +96,8 @@ const handleReadiness = (isReady, userID) => {
 }
 
 const broadcast = (message) => {
-    for (const userID in users) {
-        users[userID].ws.send(message);
+    for (const user of Object.values(users)) {
+        user.ws.send(message);
     }
 }
 
@@ -106,8 +106,8 @@ const isAllReady = () => {
 }
 
 const sendReadyStatusToNewUser = () => {
-    for (const userID in users) {
-        const message = JSON.stringify({ type: 'updateReadiness', content: { isReady: users[userID].isReady, userID: parseInt(userID) } });
+    for (const user of Object.values(users)) {
+        const message = JSON.stringify({ type: 'updateReadiness', content: { isReady: user.isReady, userID: user.id } });
         broadcast(message);
     }
 }
@@ -127,10 +127,10 @@ const startGame = () => {
 }
 
 const dealCardsToUsers = () => {
-    for (const userID in users) {
-        deck.dealUserCards(users[userID]);
-        const message = JSON.stringify({ type: 'getHandCards', content: users[userID].cards });
-        users[userID].ws.send(message);
+    for (const user of Object.values(users)) {
+        deck.dealUserCards(user);
+        const message = JSON.stringify({ type: 'getHandCards', content: user.cards });
+        user.ws.send(message);
     }
 }
 
@@ -142,8 +142,8 @@ const sendPlayingUsers = () => {
 
 const sendUpdateMoney = () => {
     const usersMoney = {};
-    for (const userID in users){
-        usersMoney[userID] = users[userID].money
+    for (const user of Object.values(users)){
+        usersMoney[user.id] = user.money
     }
     const message = JSON.stringify({ type: 'updateMoney', content: usersMoney });
     broadcast(message);
@@ -151,8 +151,8 @@ const sendUpdateMoney = () => {
 
 const sendUpdateBid = () => {
     const usersBid = {};
-    for (const userID in users) {
-        usersBid[userID] = users[userID].bid;
+    for (const user of Object.values(users)) {
+        usersBid[user.id] = user.bid;
     }
     const message = JSON.stringify({ type: 'updateBid', content: usersBid });
     broadcast(message)
@@ -160,8 +160,8 @@ const sendUpdateBid = () => {
 
 const sendUpdateBank = () => {
     let money = 0;
-    for (const userID in users) {
-        money += users[userID].bid;
+    for (const user of Object.values(users)) {
+        money += user.bid;
     }
     bank = money;
     const message = JSON.stringify({ type: 'updateBank', content: bank });
@@ -305,12 +305,12 @@ const showdown = () => {
     const usersCombination = {};
     const usersCards = {};
     const notFoldedUsers = {};
-    for (const userID in users) {
-        if (!users[userID].hasFolded) {
-            users[userID].combination = checkHighestCombination(users[userID].cards, tableCards);
-            usersCombination[userID] = users[userID].combination;
-            usersCards[userID] = users[userID].cards;
-            notFoldedUsers[userID] = users[userID];
+    for (const user of Object.values(users)) {
+        if (!user.hasFolded) {
+            user.combination = checkHighestCombination(user.cards, tableCards);
+            usersCombination[user.id] = user.combination;
+            usersCards[user.id] = user.cards;
+            notFoldedUsers[user.id] = user;
         }
     }
 
@@ -339,7 +339,7 @@ const showdown = () => {
 const handlePlayerTurn = () => {
     if (queue.length === 0 || findLastPlayerStanding()) return;
     const currentUserID = queue[0];
-    const message = JSON.stringify({ type: 'turn', content: parseInt(currentUserID) });
+    const message = JSON.stringify({ type: 'turn', content: currentUserID });
     broadcast(message)
 };
 
