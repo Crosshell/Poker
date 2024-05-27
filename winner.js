@@ -48,8 +48,8 @@ const checkAllCards = (users, winners, numCards) => {
 
 export const checkWinner = (users) => {
     let highestComboIndex = 0;
-    for (const user in users) {
-        const currentComboIndex = COMBINATIONS.indexOf(users[user].combination.name);
+    for (const user of Object.values(users)) {
+        const currentComboIndex = COMBINATIONS.indexOf(user.combination.name);
         if (currentComboIndex > highestComboIndex) {
             highestComboIndex = currentComboIndex;
         }
