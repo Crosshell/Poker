@@ -1,7 +1,8 @@
 import { START_MONEY } from "./constants.js";
 
 export class User {
-    constructor(ws) {
+    constructor(id, ws) {
+        this.id = id;
         this.isReady = false;
         this.ws = ws;
         this.cards = [];

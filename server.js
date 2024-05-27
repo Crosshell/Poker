@@ -27,8 +27,8 @@ wss.on('connection', (ws) => {
         return;
     }
 
-    users[userID] = new User(ws);
-    ws.userID = userID;
+    const user = new User(userID, ws);
+    users[userID] = user;
 
     ws.send(JSON.stringify({ type: 'getID', content: userID }));
 
@@ -39,7 +39,7 @@ wss.on('connection', (ws) => {
     ws.on('message', (message) => {
         const parsedMessage = JSON.parse(message);
         const { type, content } = parsedMessage;
-        handleMessage(type, content, ws.userID);
+        handleMessage(type, content, user.id);
     });
 
     ws.on('error', (error) => {
@@ -47,7 +47,7 @@ wss.on('connection', (ws) => {
     });
 
     ws.on('close', () => {
-        removeConnection(ws);
+        removeConnection(user.id);
     });
 });
 
@@ -135,7 +135,7 @@ const dealCardsToUsers = () => {
 }
 
 const sendPlayingUsers = () => {
-    const usersID = Object.keys(users).map(id => parseInt(id));
+    const usersID = Object.keys(users).map(Number);
     const message = JSON.stringify({ type: 'getPlayingUsers', content: usersID });
     broadcast(message);
 }
@@ -177,7 +177,7 @@ const setDealer = () => {
 }
 
 const doBlinds = () => {
-    const usersID = Object.keys(users);
+    const usersID = Object.keys(users).map(Number);
     const dealerIndex = usersID.findIndex(id => users[id].isDealer);
     const smallBlindIndex = (dealerIndex + 1) % usersID.length;
     const bigBlindIndex = (dealerIndex + 2) % usersID.length;
@@ -198,7 +198,7 @@ const applyBlind = (userID, amount) => {
 }
 
 const handleGameRound = (action, amount, userID) => {
-    if (userID !== parseInt(queue[0])) return;
+    if (userID !== queue[0]) return;
 
     if (findLastPlayerStanding()) return;
     const result = processPlayerAction(action, amount);
@@ -232,7 +232,7 @@ const proceedToNextStreet = () => {
 }
 
 const resetQueueToDealerLeft = () => {
-    const usersID = Object.keys(users);
+    const usersID = Object.keys(users).map(Number);
     const leftPlayerFromDealerID = getLeftPlayerFromDealer(usersID);
     queue = usersID
         .slice(leftPlayerFromDealerID)
@@ -294,7 +294,7 @@ const placeBet = (currentUserID, amount) => {
 }
 
 const resetQueue = (currentUserID) => {
-    const usersID = Object.keys(users);
+    const usersID = Object.keys(users).map(Number);
     queue = usersID
         .slice(currentUserID)
         .concat(usersID.slice(0, currentUserID))
@@ -392,15 +392,14 @@ const sendRiverCard = () => {
     isRiverCardSent = true;
 }
 
-const removeConnection = (ws) => {
-    const userID = ws.userID;
-
+const removeConnection = (userID) => {
     if (isGameStarted) {
         users[userID].hasFolded = true;
         const message = JSON.stringify({ type: 'userGameDisconnected', content: userID });
         broadcast(message);
-        if (userID === parseInt(queue[0])) {
-            queue.shift();
+        const index = queue.indexOf(userID);
+        if (index !== -1) {
+            queue.splice(index, 1);
         }
         handlePlayerTurn();
     } else if (users[userID]) {
