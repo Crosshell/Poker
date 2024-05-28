@@ -9,7 +9,6 @@ export class User {
         this.combination = null;
         this.money = START_MONEY;
         this.bid = 0;
-        this.isDealer = false;
         this.hasFolded = false;
     }
 }

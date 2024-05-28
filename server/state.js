@@ -12,6 +12,7 @@ export let gameState = {
     bank: 0,
     tableCards: [],
     highestBid: BIG_BLIND,
+    dealerId: 0,
     currentStreet: STREETS[0],
     isFlopCardsSent: false,
     isTurnCardSent: false,

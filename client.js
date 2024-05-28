@@ -242,13 +242,14 @@ const gameOverByFold = (winnerID, winnerCards) => {
 }
 
 const gameOver = (winnersID, usersCombinations, usersCards) => {
-    console.dir({winnersID: winnersID, usersCombinations: usersCombinations, usersCards: usersCards}, {depth: null});
     const currentTurnUSerElement = get('gameSlot' + currentTurnUserID);
     currentTurnUSerElement.style.background = '';
+
     for (const winnerID of winnersID) {
         const winnerElement = get('gameSlot' + winnerID);
         winnerElement.style.background = 'yellow';
     }
+
     for (const userID in usersCards) {
         const combinationElement = get('combinationSlot' + userID);
         const firstHandCardElement = get('firstCardSlot' + userID);

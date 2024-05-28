@@ -50,13 +50,14 @@ export const sendUpdateBank = () => {
 export const setDealer = () => {
     const usersID = Object.keys(users);
     const randomUserID = usersID[Math.floor(Math.random() * usersID.length)];
-    users[randomUserID].isDealer = true;
+    gameState.dealerId = randomUserID;
     broadcast(JSON.stringify({ type: 'setDealer', content: randomUserID }))
 }
 
 export const doBlinds = () => {
     const usersID = Object.keys(users).map(Number);
-    const dealerIndex = usersID.findIndex(id => users[id].isDealer);
+    const dealerIndex = usersID.indexOf(Number(gameState.dealerId));
+
     const smallBlindIndex = (dealerIndex + 1) % usersID.length;
     const bigBlindIndex = (dealerIndex + 2) % usersID.length;
     const firstMoveIndex = (dealerIndex + 3) % usersID.length;
@@ -77,7 +78,7 @@ export const updatePlayerTurn = () => {
     const currentUserID = gameState.queue[0];
     const message = JSON.stringify({ type: 'turn', content: currentUserID });
     broadcast(message)
-};
+}
 
 export const findLastPlayerStanding = () => {
     const activeUsers = Object.keys(users).filter(userID => !users[userID].hasFolded);
@@ -181,9 +182,9 @@ const resetQueueToDealerLeft = () => {
 }
 
 const getLeftPlayerFromDealer = (usersID) => {
-    const dealerIndex = usersID.findIndex(id => users[id].isDealer);
-
+    const dealerIndex = usersID.indexOf(Number(gameState.dealerId));
     let leftPlayerFromDealerIndex = (dealerIndex + 1) % usersID.length;
+
     while (users[usersID[leftPlayerFromDealerIndex]].hasFolded) {
         leftPlayerFromDealerIndex = (leftPlayerFromDealerIndex + 1) % usersID.length;
     }

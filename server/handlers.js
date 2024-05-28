@@ -17,7 +17,7 @@ export const handleConnection = (ws) => {
 
     users[userID] = new User(userID, ws);
 
-    sendIdToNewUser(users[userID])
+    sendIdToNewUser(users[userID]);
     sendNewConnect();
     sendReadyStatusToNewUser();
 }
