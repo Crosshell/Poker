@@ -1,6 +1,6 @@
 'use strict';
 
-import { MAX_PLAYERS } from '../constants.js';
+import { MAX_PLAYERS } from '../src/constants/constants.js';
 import { users, gameState } from './state.js';
 import { broadcast } from './utils.js';
 

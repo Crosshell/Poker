@@ -1,6 +1,6 @@
 'use strict';
 
-import { HOST, PORT } from '../constants.js';
+import { HOST, PORT } from '../src/constants/constants.js';
 import { get, UI } from './ui.js';
 import { lobbyServerHandler } from './socketHandlers.js';
 

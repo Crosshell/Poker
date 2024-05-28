@@ -1,4 +1,4 @@
-import { START_MONEY } from "./constants.js";
+import { START_MONEY } from "../constants/constants.js";
 
 export class User {
     constructor(id, ws, username) {

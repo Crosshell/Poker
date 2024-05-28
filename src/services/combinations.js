@@ -1,6 +1,6 @@
 'use strict';
 
-import { MAX_COMBINATION_SIZE, RANKS } from "./constants.js";
+import { MAX_COMBINATION_SIZE, RANKS } from "../constants/constants.js";
 
 const checkRoyalFlush = (straightCards) => {
     if (straightCards && isSameSuit(straightCards) && straightCards[0].rank === '10') {

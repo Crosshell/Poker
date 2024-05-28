@@ -1,7 +1,7 @@
 'use strict';
 
-import { Deck } from '../deck.js';
-import { BIG_BLIND, STREETS } from '../constants.js'
+import { Deck } from '../src/models/deck.js';
+import { BIG_BLIND, STREETS } from '../src/constants/constants.js'
 
 export const users = {};
 

@@ -1,11 +1,11 @@
 'use strict';
 
-import { FLOP_CARDS_COUNT } from '../constants.js';
+import { FLOP_CARDS_COUNT } from '../src/constants/constants.js';
 import { users, gameState } from './state.js';
 import { broadcast } from './utils.js';
 import { sendUpdateMoney, sendUpdateBank } from './gameUtils.js';
-import { checkHighestCombination } from '../combinations.js';
-import { checkWinner } from '../winner.js';
+import { checkHighestCombination } from '../src/services/combinations.js';
+import { checkWinner } from '../src/services/winner.js';
 import { closeServer } from './server.js';
 
 export const sendFlopCards = () => {

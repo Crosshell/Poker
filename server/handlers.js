@@ -7,8 +7,8 @@ import { getNextUserID, isConnectionError, sendIdToNewUser, sendNewConnect,
 import { broadcast, removeConnection } from './utils.js';
 import { startGame } from './game.js';
 import { users, gameState } from './state.js';
-import { User } from '../user.js';
-import { MIN_PLAYERS } from '../constants.js';
+import { User } from '../src/models/user.js';
+import { MIN_PLAYERS } from '../src/constants/constants.js';
 import { updatePlayerTurn, findLastPlayerStanding, processPlayerAction, proceedToNextStreet } from './gameUtils.js';
 
 export const handleConnection = (ws) => {

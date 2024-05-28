@@ -2,7 +2,7 @@
 
 import { users, gameState } from './state.js';
 import { broadcast } from './utils.js';
-import { BIG_BLIND, SMALL_BLIND, STREETS } from '../constants.js';
+import { BIG_BLIND, SMALL_BLIND, STREETS } from '../src/constants/constants.js';
 import { sendFlopCards, sendTurnCard, sendRiverCard, showdown } from './gameStages.js';
 import { closeServer } from './server.js';
 

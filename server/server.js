@@ -2,7 +2,7 @@
 
 import { WebSocket, WebSocketServer } from 'ws';
 import { handleConnection, handleMessage, handleClose } from './handlers.js';
-import { PORT } from '../constants.js';
+import { PORT } from '../src/constants/constants.js';
 
 const wss = new WebSocketServer({ port: PORT });
 

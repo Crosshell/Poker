@@ -1,7 +1,7 @@
 'use strict';
 
 import { Card } from './card.js';
-import { MAX_HAND_SIZE, RANKS, SUITS } from './constants.js';
+import { MAX_HAND_SIZE, RANKS, SUITS } from '../constants/constants.js';
 
 export class Deck {
     constructor() {
