@@ -3,9 +3,9 @@
   "name": "pocker",
   "version": "1.0.0",
   "description": "Poker Game",
-  "main": "game.js",
+  "main": "client.js",
   "scripts": {
-    "start": "node game.js"
+    "start": "node client.js"
   },
   "author": "Crosshell",
   "private": true,
