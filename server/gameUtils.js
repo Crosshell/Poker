@@ -4,6 +4,7 @@ import { users, gameState } from './state.js';
 import { broadcast } from './utils.js';
 import { BIG_BLIND, SMALL_BLIND, STREETS } from '../constants.js';
 import { sendFlopCards, sendTurnCard, sendRiverCard, showdown } from './gameStages.js';
+import { closeServer } from './server.js';
 
 export const dealCardsToUsers = () => {
     for (const user of Object.values(users)) {
@@ -87,6 +88,7 @@ export const findLastPlayerStanding = () => {
         sendUpdateMoney();
         sendUpdateBank();
         broadcast(JSON.stringify({ type: 'gameOverByFold', content: { winnerID: winnerID, winnerCards: users[winnerID].cards } }));
+        closeServer();
         return true;
     }
     return false;

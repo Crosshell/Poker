@@ -1,6 +1,6 @@
 'use strict';
 
-import { WebSocketServer } from 'ws';
+import { WebSocket, WebSocketServer } from 'ws';
 import { handleConnection, handleMessage, handleClose } from './handlers.js';
 import { PORT } from '../constants.js';
 
@@ -21,3 +21,13 @@ wss.on('connection', (ws) => {
         handleClose(ws);
     });
 });
+
+export const closeServer = () => {
+    for (const client of wss.clients) {
+        if (client.readyState === WebSocket.OPEN) {
+            client.close();
+        }
+    }
+    console.log('Server closed');
+    wss.close();
+}

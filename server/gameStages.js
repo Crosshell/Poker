@@ -6,6 +6,7 @@ import { broadcast } from './utils.js';
 import { sendUpdateMoney, sendUpdateBank } from './gameUtils.js';
 import { checkHighestCombination } from '../combinations.js';
 import { checkWinner } from '../winner.js';
+import { closeServer } from './server.js';
 
 export const sendFlopCards = () => {
     for (let i = 0; i < FLOP_CARDS_COUNT; i++) {
@@ -60,4 +61,5 @@ export const showdown = () => {
         }
     });
     broadcast(message);
+    closeServer();
 }
