@@ -1,7 +1,7 @@
 'use strict';
 
 import { MAX_PLAYERS } from '../constants.js';
-import { gameState, users } from './state.js';
+import { users, gameState } from './state.js';
 import { broadcast } from './utils.js';
 
 export const getNextUserID = () => {
@@ -26,6 +26,17 @@ export const isConnectionError = (ws, userID) => {
     return false;
 }
 
+export const validateUsername = (username, ws, user) => {
+    const stringUsername = username.toString();
+    if (stringUsername.length >= 4 && stringUsername.length <= 10) {
+        ws.send(JSON.stringify({ type: 'successfulConnect', content: 'OK' }));
+        users[user.id].username = username;
+    } else {
+        ws.send(JSON.stringify({ type: 'error', content: 'Invalid username. Username must be 4 to 10 characters.' }));
+        ws.close();
+    }
+}
+
 export const sendIdToNewUser = (user) => {
     user.ws.send(JSON.stringify({ type: 'getID', content: user.id }));
 }
@@ -36,7 +47,7 @@ export const sendNewConnect = () => {
 
 export const sendReadyStatusToNewUser = () => {
     for (const user of Object.values(users)) {
-        broadcast(JSON.stringify({ type: 'updateReadiness', content: { isReady: user.isReady, userID: user.id } }));
+        broadcast(JSON.stringify({ type: 'updateReadiness', content: { isReady: user.isReady, userID: user.id, username: user.username } }));
     }
 }
 

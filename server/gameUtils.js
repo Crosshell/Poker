@@ -15,8 +15,11 @@ export const dealCardsToUsers = () => {
 }
 
 export const sendPlayingUsers = () => {
-    const usersID = Object.keys(users).map(Number);
-    broadcast(JSON.stringify({ type: 'getPlayingUsers', content: usersID }));
+    const usersInfo = Object.values(users).map(user => ({
+        id: user.id,
+        username: user.username
+    }));
+    broadcast(JSON.stringify({ type: 'getPlayingUsers', content: usersInfo }));
 }
 
 export const sendUpdateMoney = () => {
@@ -88,7 +91,7 @@ export const findLastPlayerStanding = () => {
         gameState.bank = 0;
         sendUpdateMoney();
         sendUpdateBank();
-        broadcast(JSON.stringify({ type: 'gameOverByFold', content: { winnerID: winnerID, winnerCards: users[winnerID].cards } }));
+        broadcast(JSON.stringify({ type: 'gameOverByFold', content: [ winnerID, users[winnerID].cards,  users[winnerID].username ] }));
         closeServer();
         return true;
     }
@@ -100,7 +103,7 @@ export const processPlayerAction = (action, amount) => {
 
     if (action === 'fold') {
         users[currentUserID].hasFolded = true;
-        broadcast(JSON.stringify({ type: 'foldedUser', content: currentUserID }));
+        broadcast(JSON.stringify({ type: 'foldedUser', content: [ currentUserID, users[currentUserID].username ] }));
     } else if (action === 'call') {
         callBet(currentUserID);
     } else if (action === 'bet') {

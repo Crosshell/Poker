@@ -3,6 +3,14 @@
     align-items: center;
     flex-direction: column;
 }
+label {
+    padding-top: 20px;
+}
+
+input,
+label {
+    margin: 0.4rem 0;
+}
 #connect {
     margin-top: 50px;
 }

@@ -1,9 +1,10 @@
 import { START_MONEY } from "./constants.js";
 
 export class User {
-    constructor(id, ws) {
+    constructor(id, ws, username) {
         this.id = id;
         this.ws = ws;
+        this.username = username;
         this.isReady = false;
         this.cards = [];
         this.combination = null;

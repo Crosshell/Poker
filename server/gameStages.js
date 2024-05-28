@@ -52,13 +52,11 @@ export const showdown = () => {
     sendUpdateMoney();
     sendUpdateBank();
 
+    const winnersUsernames = winnersID.map(winnerID => users[winnerID].username);
+
     const message = JSON.stringify({
         type: 'gameOver',
-        content: {
-            winners: winnersID,
-            usersCombination: usersCombination,
-            usersCards: usersCards
-        }
+        content: [ winnersID, usersCombination, usersCards, winnersUsernames ]
     });
     broadcast(message);
     closeServer();

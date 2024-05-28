@@ -43,7 +43,9 @@ export const makeMove = (socket) => {
     UI.betButton.addEventListener('click', handleBet);
 }
 
-export const gameOverByFold = (winnerID, winnerCards) => {
+export const gameOverByFold = (content) => {
+    const [ winnerID, winnerCards, winnerUsername ] = content;
+
     const currentTurnUSerElement = get('gameSlot' + data.currentTurnUserID);
     currentTurnUSerElement.style.background = '';
 
@@ -54,10 +56,12 @@ export const gameOverByFold = (winnerID, winnerCards) => {
 
     winnerFirstCardElement.src = winnerCards[0].image;
     winnerSecondCardElement.src = winnerCards[1].image;
-    alert(`User ${winnerID} won due to all players folding`);
+    alert(`${winnerUsername} won due to all players folding`);
 }
 
-export const gameOver = (winnersID, usersCombinations, usersCards) => {
+export const gameOver = (content) => {
+    const [ winnersID, usersCombinations, usersCards, winnersUsername ] = content;
+
     const currentTurnUSerElement = get('gameSlot' + data.currentTurnUserID);
     currentTurnUSerElement.style.background = '';
 
@@ -74,5 +78,5 @@ export const gameOver = (winnersID, usersCombinations, usersCards) => {
         firstHandCardElement.src = usersCards[userID][0].image;
         secondHandCardElement.src = usersCards[userID][1].image;
     }
-    alert(`WINNER IS User ${winnersID} with ${usersCombinations[winnersID[0]].name}`);
+    alert(`WINNER IS ${winnersUsername} with ${usersCombinations[winnersID[0]].name}`);
 }

@@ -1,6 +1,9 @@
 'use strict';
 
-import { getNextUserID, isConnectionError, sendIdToNewUser, sendNewConnect, sendReadyStatusToNewUser, isAllReady } from './lobbyUtils.js';
+import { getNextUserID, isConnectionError, sendIdToNewUser, sendNewConnect,
+         sendReadyStatusToNewUser, isAllReady, validateUsername
+} from './lobbyUtils.js';
+
 import { broadcast, removeConnection } from './utils.js';
 import { startGame } from './game.js';
 import { users, gameState } from './state.js';
@@ -40,8 +43,12 @@ const handleMassageType = (type, content, ws) => {
     if (!user) return;
 
     switch (type) {
+        case 'clientUsername':
+            validateUsername(content, ws, user);
+            handleReadiness(user.isReady, user.id, user.username);
+            break;
         case 'readiness':
-            handleReadiness(content, user.id);
+            handleReadiness(content, user.id, user.username);
             break;
         case 'playerMove':
             handleGameRound(content.action, content.amount, user.id);
@@ -51,9 +58,9 @@ const handleMassageType = (type, content, ws) => {
     }
 }
 
-const handleReadiness = (isReady, userID) => {
+const handleReadiness = (isReady, userID, username) => {
     users[userID].isReady = isReady;
-    broadcast(JSON.stringify({ type: 'updateReadiness', content: { isReady: isReady, userID: userID } }));
+    broadcast(JSON.stringify({ type: 'updateReadiness', content: { isReady: isReady, userID: userID, username: username } }));
     if (Object.keys(users).length >= MIN_PLAYERS && isAllReady()) {
         startGame();
     }

@@ -1,7 +1,7 @@
 'use strict';
 
 import { HOST, PORT } from '../constants.js';
-import { UI } from './ui.js';
+import { get, UI } from './ui.js';
 import { lobbyServerHandler } from './socketHandlers.js';
 
 export const data = {
@@ -16,18 +16,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
 const startScreen = () => {
     UI.connectButton.addEventListener('click', () => {
-        UI.startScreenElement.style.display = 'none';
-        UI.connectingMessage.style.display = 'block';
-        connectToLobby();
+        const nameElement = get('name');
+        const username = nameElement.value;
+        connectToLobby(username);
     });
 }
 
-const connectToLobby = () => {
+const connectToLobby = (username) => {
     const socket = new WebSocket(HOST + ':' + PORT);
     socket.addEventListener('open',  () => {
-        console.log('Successful connection to lobby');
-        UI.connectingMessage.style.display = 'none';
-        UI.lobbyElement.style.display = 'flex';
+        console.log('Successful connection to server');
+
+        socket.send(JSON.stringify({ type: 'clientUsername', content: username }));
 
         socket.addEventListener('message', (event) => {
             const message = JSON.parse(event.data);

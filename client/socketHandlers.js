@@ -1,8 +1,8 @@
 'use strict';
 
 import {
-    get, UI, updateConnectedUsers, updateReadiness,
-    showPlayers, updateUsersMoney, updateUsersBid,
+    get, showLobby, updateConnectedUsers, updateReadiness,
+    showPlayers, updateUsersMoney, updateUsersBid, updateBank,
     updateDealer, showYourHandCards, updateTurnUser,
     updateFoldedUsers, updateTable, updateDisconnectedUser
 } from './ui.js'
@@ -13,8 +13,9 @@ import { game, makeMove, gameOverByFold, gameOver } from './gameManager.js';
 export const lobbyServerHandler = (socket, message) => {
     const handlers = {
         'getID': (content) => { data.yourID = content; },
+        'successfulConnect': () => { showLobby(); },
         'newConnect': (content) => { updateConnectedUsers(content); },
-        'updateReadiness': (content) => { updateReadiness(content.isReady, content.userID); },
+        'updateReadiness': (content) => { updateReadiness(content); },
         'userLobbyDisconnected': (content) => {
             const disconnectedUserElement = get('lobbySlot' + content);
             disconnectedUserElement.style.display = 'none';
@@ -36,7 +37,7 @@ export const gameServerHandler = (socket, message, handCards) => {
         },
         'updateMoney': (content) => { updateUsersMoney(content); },
         'updateBid': (content) => { updateUsersBid(content); },
-        'updateBank': (content) => { UI.bankElement.textContent = `Bank: $` + content; },
+        'updateBank': (content) => { updateBank(content) },
         'setDealer': (content) => { updateDealer(content); },
         'turn': (content) => {
             updateTurnUser(content);
@@ -45,9 +46,9 @@ export const gameServerHandler = (socket, message, handCards) => {
         'betError': (content) => { alert(content); },
         'foldedUser': (content) => { updateFoldedUsers(content); },
         'updateTable': (content) => { updateTable(content); },
-        'gameOverByFold': (content) => { gameOverByFold(content.winnerID, content.winnerCards); },
+        'gameOverByFold': (content) => { gameOverByFold(content); },
         'userGameDisconnected': (content) => { updateDisconnectedUser(content); },
-        'gameOver': (content) => { gameOver(content.winners, content.usersCombination, content.usersCards); },
+        'gameOver': (content) => { gameOver(content); },
     };
 
     if (handlers[message.type]) {

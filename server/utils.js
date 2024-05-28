@@ -12,7 +12,7 @@ export const broadcast = (message) => {
 export const removeConnection = (userID) => {
     if (gameState.isGameStarted) {
         users[userID].hasFolded = true;
-        broadcast(JSON.stringify({ type: 'userGameDisconnected', content: userID }));
+        broadcast(JSON.stringify({ type: 'userGameDisconnected', content: [ userID, users[userID].username ] }));
         const index = gameState.queue.indexOf(userID);
         if (index !== -1) {
             gameState.queue.splice(index, 1);

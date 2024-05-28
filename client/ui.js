@@ -24,6 +24,14 @@ export const UI = {
     riverCardElement: get('riverCard'),
 }
 
+export const showLobby = () => {
+    console.log('Successful connection to lobby');
+    UI.startScreenElement.style.display = 'none';
+    UI.connectingMessage.style.display = 'block';
+    UI.connectingMessage.style.display = 'none';
+    UI.lobbyElement.style.display = 'flex';
+}
+
 export const updateConnectedUsers = (connectedUsers) => {
     for (const userID of connectedUsers) {
         const connectedUserElement = get('lobbySlot' + userID);
@@ -31,24 +39,20 @@ export const updateConnectedUsers = (connectedUsers) => {
     }
 }
 
-export const updateReadiness = (isUserReady, userID) => {
+export const updateReadiness = (content) => {
+    const [ isUserReady, userID, username ] = [ content.isReady, content.userID, content.username ];
+
     const userLobbyElement = get('lobbySlot' + userID);
     const readiness = isUserReady ? 'Ready' : 'Not Ready';
-    if (userID === data.yourID) {
-        userLobbyElement.textContent = `User ${userID} (You): ${readiness}`;
-    } else {
-        userLobbyElement.textContent = `User ${userID}: ${readiness}`;
-    }
+    userLobbyElement.textContent = username + ': ' + readiness;
 }
 
-export const showPlayers = (usersToShow) => {
-    for (const userID of usersToShow) {
-        const gameUserElement = get('gameSlot' + userID);
+export const showPlayers = (users) => {
+    for (const user of users) {
+        const gameUserElement = get('gameSlot' + user.id);
         gameUserElement.style.display = 'flex';
-        if (userID === data.yourID){
-            const yourNameElement = get('nameSlot' + userID);
-            yourNameElement.textContent = 'YOU';
-        }
+        const userNameElement = get('nameSlot' + user.id);
+        userNameElement.textContent = user.username;
     }
 }
 
@@ -73,6 +77,10 @@ export const updateUsersBid = (usersBid) => {
     }
 }
 
+export const updateBank = (money) => {
+    UI.bankElement.textContent = `Bank: $` + money;
+}
+
 export const updateDealer = (dealer) => {
     const dealerElement = get('dealerSlot' + dealer);
     dealerElement.textContent = 'Dealer';
@@ -90,14 +98,18 @@ export const updateTurnUser = (turnUserID) => {
     data.currentTurnUserID = turnUserID;
 }
 
-export const updateFoldedUsers = (foldedUserID) => {
-    alert(`User ${foldedUserID} has folded`);
+export const updateFoldedUsers = (content) => {
+    const [ foldedUserID, foldedUsername ] = content;
+
+    alert(foldedUsername + ' has folded');
     const foldedUserElement = get('gameSlot' + foldedUserID);
     foldedUserElement.style.color = 'rgba(199,199,199,0.94)';
 }
 
-export const updateDisconnectedUser = (disconnectedUserID) => {
-    alert(`User ${disconnectedUserID} disconnected`);
+export const updateDisconnectedUser = (content) => {
+    const [ disconnectedUserID, disconnectedUsername ] = content;
+
+    alert(disconnectedUsername + ' disconnected');
     const disconnectedUserElement = get('gameSlot' + disconnectedUserID);
     disconnectedUserElement.style.color = 'rgba(199,199,199,0.94)';
 }
