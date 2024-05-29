@@ -41,7 +41,7 @@ export const gameServerHandler = (socket, message, handCards) => {
         'setDealer': (content) => { updateDealer(content); },
         'turn': (content) => {
             updateTurnUser(content);
-            if (content === data.yourID) makeMove(socket);
+            if (content[0] === data.yourID) makeMove(socket);
         },
         'betError': (content) => { alert(content); },
         'foldedUser': (content) => { updateFoldedUsers(content); },

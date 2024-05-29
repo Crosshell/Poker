@@ -13,6 +13,7 @@ export const UI = {
     slotsArea: get('slotsArea'),
     tableElement: get('table'),
     bankElement: get('bank'),
+    turnNotifyElement: get('turnNotify'),
     controlPanel: get('controlPanel'),
     callButton: get('call'),
     foldButton: get('fold'),
@@ -86,7 +87,8 @@ export const updateDealer = (dealer) => {
     dealerElement.textContent = 'Dealer';
 }
 
-export const updateTurnUser = (turnUserID) => {
+export const updateTurnUser = (content) => {
+    const [ turnUserID, turnUsername ] = content;
     if (data.currentTurnUserID) {
         const previousGameUserElement = get('gameSlot' + data.currentTurnUserID);
         previousGameUserElement.style.background = '';
@@ -94,7 +96,8 @@ export const updateTurnUser = (turnUserID) => {
 
     const gameUserElement = get('gameSlot' + turnUserID);
     gameUserElement.style.background = '#c2c2c2';
-
+    UI.turnNotifyElement.textContent = turnUsername + '\'s turn';
+    UI.turnNotifyElement.style.color = 'black';
     data.currentTurnUserID = turnUserID;
 }
 

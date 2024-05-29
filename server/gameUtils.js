@@ -79,7 +79,7 @@ const applyBlind = (userID, amount) => {
 export const updatePlayerTurn = () => {
     if (gameState.queue.length === 0 || findLastPlayerStanding()) return;
     const currentUserID = gameState.queue[0];
-    const message = JSON.stringify({ type: 'turn', content: currentUserID });
+    const message = JSON.stringify({ type: 'turn', content: [ currentUserID, users[currentUserID].username] });
     broadcast(message)
 }
 

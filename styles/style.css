@@ -101,6 +101,17 @@ label {
 #bank {
     display: flex;
     grid-area: 2 / 2 / 2 / 2;
+    font-size: 30px;
+}
+div#turnNotify {
+    display: flex;
+    grid-area: 2 / 3 / 3 / 3;
+    border: 0;
+    height: 60%;
+    width: 60%;
+    justify-content: center;
+    align-items: center;
+    font-size: 30px;
 }
 #controlPanel {
     display: none;

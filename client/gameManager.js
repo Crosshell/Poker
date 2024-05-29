@@ -16,6 +16,9 @@ export const game = (socket, handCards) => {
 }
 
 export const makeMove = (socket) => {
+    UI.turnNotifyElement.textContent = 'Your turn';
+    UI.turnNotifyElement.style.color = 'red';
+
     const handleCall = () => {
         socket.send(JSON.stringify({ type: 'playerMove', content: { action: 'call' } }));
         removeButtonListeners();
