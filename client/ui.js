@@ -11,7 +11,6 @@ export const UI = {
     lobbyElement: get('lobby'),
     readyButton: get('ready'),
     slotsArea: get('slotsArea'),
-    tableElement: get('table'),
     bankElement: get('bank'),
     turnNotifyElement: get('turnNotify'),
     controlPanel: get('controlPanel'),
@@ -46,6 +45,20 @@ export const updateReadiness = (content) => {
     const userLobbyElement = get('lobbySlot' + userID);
     const readiness = isUserReady ? 'Ready' : 'Not Ready';
     userLobbyElement.textContent = username + ': ' + readiness;
+}
+
+export const changeReadiness = (socket) => {
+    data.isYouReady = !data.isYouReady;
+    socket.send(JSON.stringify({ type: 'readiness', content: data.isYouReady }));
+    if (data.isYouReady) {
+        UI.readyButton.style.backgroundColor = '#1df817';
+        UI.readyButton.style.boxShadow = '0 5px 5px #29731c, 0 9px 0 #14a81b, 0 9px 10px rgba(0,0,0,0.4), inset 0 2px 9px rgba(255,255,255,0.2), inset 0 -2px 9px rgba(0,0,0,0.2)';
+        UI.readyButton.style.borderBottom = '1px solid rgba(68, 241, 36, 0.2)';
+    } else {
+        UI.readyButton.style.backgroundColor = '#f81717';
+        UI.readyButton.style.boxShadow = '0 5px 5px #731c1c, 0 9px 0 #a81414, 0 9px 10px rgba(0,0,0,0.4), inset 0 2px 9px rgba(255,255,255,0.2), inset 0 -2px 9px rgba(0,0,0,0.2)';
+        UI.readyButton.style.borderBottom = '1px solid rgba(241, 36, 36, 0.2)';
+    }
 }
 
 export const showPlayers = (users) => {
@@ -95,26 +108,25 @@ export const updateTurnUser = (content) => {
     }
 
     const gameUserElement = get('gameSlot' + turnUserID);
-    gameUserElement.style.background = '#c2c2c2';
+    gameUserElement.style.background = 'rgba(24,255,0,0.29)';
     UI.turnNotifyElement.textContent = turnUsername + '\'s turn';
-    UI.turnNotifyElement.style.color = 'black';
+    UI.turnNotifyElement.style.color = 'white';
     data.currentTurnUserID = turnUserID;
 }
 
 export const updateFoldedUsers = (content) => {
     const [ foldedUserID, foldedUsername ] = content;
 
-    alert(foldedUsername + ' has folded');
+    displayMessage(foldedUsername + ' has folded');
     const foldedUserElement = get('gameSlot' + foldedUserID);
-    foldedUserElement.style.color = 'rgba(199,199,199,0.94)';
+    foldedUserElement.style.color = 'rgba(255,0,0,0.94)';
 }
 
 export const updateDisconnectedUser = (content) => {
     const [ disconnectedUserID, disconnectedUsername ] = content;
-
-    alert(disconnectedUsername + ' disconnected');
+    displayMessage(disconnectedUsername + ' disconnected')
     const disconnectedUserElement = get('gameSlot' + disconnectedUserID);
-    disconnectedUserElement.style.color = 'rgba(199,199,199,0.94)';
+    disconnectedUserElement.style.color = 'rgba(255,0,0,0.94)';
 }
 
 export const updateTable = (tableCards) => {
@@ -123,4 +135,19 @@ export const updateTable = (tableCards) => {
     UI.flopCard3Element.src = tableCards[2].image;
     UI.turnCardElement.src = tableCards[3].image;
     UI.riverCardElement.src = tableCards[4].image;
+}
+
+export const displayMessage = (message) => {
+    let toast = document.createElement('div');
+    toast.innerText = message;
+    toast.style.position = 'fixed';
+    toast.style.bottom = '10px';
+    toast.style.left = '50%';
+    toast.style.transform = 'translateX(-50%)';
+    toast.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    toast.style.color = '#fff';
+    toast.style.padding = '10px 20px';
+    toast.style.borderRadius = '5px';
+    document.body.appendChild(toast);
+    setTimeout(() => document.body.removeChild(toast), 3000);
 }

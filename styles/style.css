@@ -1,15 +1,32 @@
+body {
+    background-image: url('../images/backgrounds/red-background.jpg');
+    background-size: cover;
+}
 #startScreen {
     display: flex;
     align-items: center;
     flex-direction: column;
+    color: white;
+}
+#startScreen h1 {
+    font-size: 6em;
+}
+#lobby h1 {
+    font-size: 6em;
+}
+#rules {
+    color: yellow;
 }
 label {
     padding-top: 20px;
+    font-size: 200%;
 }
-
 input,
 label {
     margin: 0.4rem 0;
+}
+#name {
+    font-size: 200%;
 }
 #connect {
     margin-top: 50px;
@@ -23,6 +40,7 @@ label {
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    color: white;
 }
 
 #lobby h1 {
@@ -52,8 +70,9 @@ label {
 #slotsArea > div {
     flex-direction: column;
     align-items: center;
-    border: 1px solid #000;
+    border: 1px solid #ffffff;
     padding: 10px;
+    color: white;
 }
 #slotsArea > div > div {
     margin: 5px 0;
@@ -98,20 +117,23 @@ label {
     display: none;
     grid-area: 2 / 1 / 3 / 2;
 }
-#bank {
+div#table {
     display: flex;
-    grid-area: 2 / 2 / 2 / 2;
+    grid-area: 2 / 2 / 2 / 4;
+    border: 0;
+    flex-direction: row;
+}
+div#bank {
+    display: flex;
     font-size: 30px;
+    align-self: flex-start;
+    color: white;
 }
 div#turnNotify {
     display: flex;
-    grid-area: 2 / 3 / 3 / 3;
-    border: 0;
-    height: 60%;
-    width: 60%;
-    justify-content: center;
-    align-items: center;
     font-size: 30px;
+    align-self: flex-start;
+    color: white;
 }
 #controlPanel {
     display: none;
@@ -119,16 +141,54 @@ div#turnNotify {
     align-items: center;
     gap: 30px;
 }
-#table {
-    display: none;
-    padding-top: 20px;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
+#call, #fold, #bet {
+    text-decoration: none;
+    color: #fff;
+    font-weight: bold;
+    padding: 12px 20px;
+    font-size: 18px;
+    border-radius: 10px;
+    background-color: #666666;
+    box-shadow: 0 5px 5px #313131, 0 9px 0 #393939, 0 9px 10px rgba(0,0,0,0.4), inset 0 2px 9px rgba(255,255,255,0.2), inset 0 -2px 9px rgba(0,0,0,0.2);
+    position: relative;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+    display: inline-block;
+    text-shadow: 0 -1px 0 rgba(0,0,0,0.2);
+    margin-bottom: 40px;
+}
+#connect {
+    text-decoration: none;
+    color: #fff;
+    font-weight: bold;
+    padding: 12px 20px;
+    font-size: 18px;
+    border-radius: 10px;
+    background-color: #ff6814;
+    box-shadow: 0 5px 5px #af5610, 0 9px 0 #552e15, 0 9px 10px rgba(0,0,0,0.4), inset 0 2px 9px rgba(202, 156, 118, 0.2), inset 0 -2px 9px rgba(0,0,0,0.2);
+    position: relative;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+    display: inline-block;
+    text-shadow: 0 -1px 0 rgba(0,0,0,0.2);
+    margin-bottom: 40px;
+}
+#ready {
+    text-decoration: none;
+    color: #fff;
+    font-weight: bold;
+    padding: 12px 20px;
+    font-size: 18px;
+    border-radius: 10px;
+    background-color: #f81717;
+    box-shadow: 0 5px 5px #731c1c, 0 9px 0 #a81414, 0 9px 10px rgba(0,0,0,0.4), inset 0 2px 9px rgba(255,255,255,0.2), inset 0 -2px 9px rgba(0,0,0,0.2);
+    position: relative;
+    border-bottom: 1px solid rgba(241, 36, 36, 0.2);
+    display: inline-block;
+    text-shadow: 0 -1px 0 rgba(0,0,0,0.2);
+    margin-bottom: 40px;
 }
 #flopCard1, #flopCard2, #flopCard3, #turnCard, #riverCard {
-    height: 7%;
-    width: 7%;
+    height: 20%;
+    width: 20%;
 }
 #cardsSlot1, #cardsSlot2, #cardsSlot3, #cardsSlot4, #cardsSlot5,
 #cardsSlot6, #cardsSlot7, #cardsSlot8, #cardsSlot9, #cardsSlot10 {
@@ -151,5 +211,5 @@ div#turnNotify {
 #combinationSlot1, #combinationSlot2, #combinationSlot3, #combinationSlot4,
 #combinationSlot5, #combinationSlot6, #combinationSlot7, #combinationSlot8,
 #combinationSlot9, #combinationSlot10 {
-    color: midnightblue;
+    color: white;
 }

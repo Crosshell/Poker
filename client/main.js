@@ -1,7 +1,7 @@
 'use strict';
 
 import { HOST, PORT } from '../src/constants/constants.js';
-import { get, UI } from './ui.js';
+import { get, UI, changeReadiness } from './ui.js';
 import { lobbyServerHandler } from './socketHandlers.js';
 
 export const data = {
@@ -35,8 +35,7 @@ const connectToLobby = (username) => {
         });
 
         UI.readyButton.addEventListener('click', () => {
-            data.isYouReady = !data.isYouReady;
-            socket.send(JSON.stringify({ type: 'readiness', content: data.isYouReady }));
+            changeReadiness(socket);
         });
     });
 }

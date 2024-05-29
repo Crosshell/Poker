@@ -4,7 +4,7 @@ import {
     get, showLobby, updateConnectedUsers, updateReadiness,
     showPlayers, updateUsersMoney, updateUsersBid, updateBank,
     updateDealer, showYourHandCards, updateTurnUser,
-    updateFoldedUsers, updateTable, updateDisconnectedUser
+    updateFoldedUsers, updateTable, updateDisconnectedUser, displayMessage
 } from './ui.js'
 
 import { data } from './main.js';
@@ -21,7 +21,7 @@ export const lobbyServerHandler = (socket, message) => {
             disconnectedUserElement.style.display = 'none';
         },
         'getHandCards': (content) => { game(socket, content); },
-        'error': (content) => { alert(content); },
+        'error': (content) => { displayMessage(content); },
     };
 
     if (handlers[message.type]) {
@@ -43,7 +43,7 @@ export const gameServerHandler = (socket, message, handCards) => {
             updateTurnUser(content);
             if (content[0] === data.yourID) makeMove(socket);
         },
-        'betError': (content) => { alert(content); },
+        'betError': (content) => { displayMessage(content); },
         'foldedUser': (content) => { updateFoldedUsers(content); },
         'updateTable': (content) => { updateTable(content); },
         'gameOverByFold': (content) => { gameOverByFold(content); },

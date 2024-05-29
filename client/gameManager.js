@@ -1,14 +1,14 @@
 'use strict';
 
 import { gameServerHandler } from './socketHandlers.js';
-import { get, UI } from './ui.js';
+import { displayMessage, get, UI } from './ui.js';
 import { data } from './main.js';
 
 export const game = (socket, handCards) => {
     UI.lobbyElement.style.display = 'none';
     UI.slotsArea.style.display = 'grid';
-    UI.tableElement.style.display = 'flex';
     UI.controlPanel.style.display = 'flex';
+    document.body.style.backgroundImage = "url('../images/backgrounds/green-background.jpg')";
     socket.addEventListener('message', (event) => {
         const message = JSON.parse(event.data);
         gameServerHandler(socket, message, handCards);
@@ -53,13 +53,13 @@ export const gameOverByFold = (content) => {
     currentTurnUSerElement.style.background = '';
 
     const winnerElement = get('gameSlot' + winnerID);
-    winnerElement.style.background = 'yellow';
+    winnerElement.style.background = 'rgba(255,242,0,0.33)';
     const winnerFirstCardElement = get('firstCardSlot' + winnerID);
     const winnerSecondCardElement = get('secondCardSlot' + winnerID);
 
     winnerFirstCardElement.src = winnerCards[0].image;
     winnerSecondCardElement.src = winnerCards[1].image;
-    alert(`${winnerUsername} won due to all players folding`);
+    displayMessage(`${winnerUsername} won due to all players folding`);
 }
 
 export const gameOver = (content) => {
@@ -70,7 +70,7 @@ export const gameOver = (content) => {
 
     for (const winnerID of winnersID) {
         const winnerElement = get('gameSlot' + winnerID);
-        winnerElement.style.background = 'yellow';
+        winnerElement.style.background = 'rgba(255,242,0,0.33)';
     }
 
     for (const userID in usersCards) {
@@ -81,5 +81,5 @@ export const gameOver = (content) => {
         firstHandCardElement.src = usersCards[userID][0].image;
         secondHandCardElement.src = usersCards[userID][1].image;
     }
-    alert(`WINNER IS ${winnersUsername} with ${usersCombinations[winnersID[0]].name}`);
+    displayMessage(`WINNER IS ${winnersUsername} with ${usersCombinations[winnersID[0]].name}`);
 }
