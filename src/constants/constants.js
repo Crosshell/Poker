@@ -15,5 +15,5 @@ export const BIG_BLIND = 10;
 export const FLOP_CARDS_COUNT = 3;
 export const STREETS = ['PreFlop', 'Flop', 'Turn', 'River', 'Showdown'];
 
-export const HOST = 'ws://127.0.0.1';
+export const HOST = '127.0.0.1';
 export const PORT = 8080;

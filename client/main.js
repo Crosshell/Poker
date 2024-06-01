@@ -2,6 +2,7 @@
 
 import { HOST, PORT } from '../src/constants/constants.js';
 import { get, UI, changeReadiness } from './ui.js';
+import { initializeLobbySlots, initializePlayerSlots } from './slotsInitializer.js'
 import { lobbyServerHandler } from './socketHandlers.js';
 
 export const data = {
@@ -11,6 +12,8 @@ export const data = {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    initializeLobbySlots();
+    initializePlayerSlots();
     startScreen();
 });
 
@@ -23,7 +26,7 @@ const startScreen = () => {
 }
 
 const connectToLobby = (username) => {
-    const socket = new WebSocket(HOST + ':' + PORT);
+    const socket = new WebSocket(`ws://${HOST}:${PORT}`);
     socket.addEventListener('open',  () => {
         console.log('Successful connection to server');
 

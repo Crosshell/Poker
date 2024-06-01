@@ -2,39 +2,49 @@ body {
     background-image: url('../images/backgrounds/red-background.jpg');
     background-size: cover;
 }
+
 #startScreen {
     display: flex;
     align-items: center;
     flex-direction: column;
     color: white;
 }
+
 #startScreen h1 {
     font-size: 6em;
 }
+
 #lobby h1 {
     font-size: 6em;
 }
+
 #rules {
     color: yellow;
 }
+
 label {
     padding-top: 20px;
     font-size: 200%;
 }
+
 input,
 label {
     margin: 0.4rem 0;
 }
+
 #name {
     font-size: 200%;
 }
+
 #connect {
     margin-top: 50px;
 }
+
 #connectingMessage {
     display: none;
     margin-top: 10px;
 }
+
 #lobby {
     display: none;
     justify-content: center;
@@ -46,16 +56,15 @@ label {
 #lobby h1 {
     text-align: center;
 }
+
 #lobby button {
     margin-top: 10px;
 }
+
 #lobbySlots {
     margin-top: 10px;
 }
-#lobbySlot1, #lobbySlot2, #lobbySlot3, #lobbySlot4, #lobbySlot5,
-#lobbySlot6, #lobbySlot7, #lobbySlot8, #lobbySlot9, #lobbySlot10 {
-    display: none;
-}
+
 #slotsArea {
     display: none;
     grid-template-columns: repeat(4, 1fr);
@@ -67,6 +76,7 @@ label {
     height: 100vh;
     padding: 20px;
 }
+
 #slotsArea > div {
     flex-direction: column;
     align-items: center;
@@ -74,73 +84,89 @@ label {
     padding: 10px;
     color: white;
 }
+
 #slotsArea > div > div {
     margin: 5px 0;
 }
+
 #gameSlot1 {
     display: none;
     grid-area: 1 / 1 / 2 / 2;
 }
+
 #gameSlot2 {
     display: none;
     grid-area: 1 / 2 / 2 / 3;
 }
+
 #gameSlot3 {
     display: none;
     grid-area: 1 / 3 / 2 / 4;
 }
+
 #gameSlot4 {
     display: none;
     grid-area: 1 / 4 / 2 / 5;
 }
+
 #gameSlot5 {
     display: none;
     grid-area: 2 / 4 / 3 / 5;
 }
+
 #gameSlot6 {
     display: none;
     grid-area: 3 / 4 / 4 / 5;
 }
+
 #gameSlot7 {
     display: none;
     grid-area: 3 / 3 / 4 / 4;
 }
+
 #gameSlot8 {
     display: none;
     grid-area: 3 / 2 / 4 / 3;
 }
+
 #gameSlot9 {
     display: none;
     grid-area: 3 / 1 / 4 / 2;
 }
+
 #gameSlot10 {
     display: none;
     grid-area: 2 / 1 / 3 / 2;
 }
+
 div#table {
     display: flex;
     grid-area: 2 / 2 / 2 / 4;
     border: 0;
     flex-direction: row;
 }
+
 div#bank {
     display: flex;
     font-size: 30px;
     align-self: flex-start;
     color: white;
 }
+
 div#turnNotify {
     display: flex;
     font-size: 30px;
     align-self: flex-start;
     color: white;
 }
+
 #controlPanel {
     display: none;
     justify-content: center;
     align-items: center;
     gap: 30px;
 }
+
 #call, #fold, #bet {
     text-decoration: none;
     color: #fff;
@@ -156,6 +182,7 @@ div#turnNotify {
     text-shadow: 0 -1px 0 rgba(0,0,0,0.2);
     margin-bottom: 40px;
 }
+
 #connect {
     text-decoration: none;
     color: #fff;
@@ -171,6 +198,7 @@ div#turnNotify {
     text-shadow: 0 -1px 0 rgba(0,0,0,0.2);
     margin-bottom: 40px;
 }
+
 #ready {
     text-decoration: none;
     color: #fff;
@@ -186,30 +214,8 @@ div#turnNotify {
     text-shadow: 0 -1px 0 rgba(0,0,0,0.2);
     margin-bottom: 40px;
 }
+
 #flopCard1, #flopCard2, #flopCard3, #turnCard, #riverCard {
     height: 20%;
     width: 20%;
-}
-#cardsSlot1, #cardsSlot2, #cardsSlot3, #cardsSlot4, #cardsSlot5,
-#cardsSlot6, #cardsSlot7, #cardsSlot8, #cardsSlot9, #cardsSlot10 {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-#firstCardSlot1, #secondCardSlot1, #firstCardSlot2, #secondCardSlot2,
-#firstCardSlot3, #secondCardSlot3, #firstCardSlot4, #secondCardSlot4,
-#firstCardSlot5, #secondCardSlot5, #firstCardSlot6, #secondCardSlot6,
-#firstCardSlot7, #secondCardSlot7, #firstCardSlot8, #secondCardSlot8,
-#firstCardSlot9, #secondCardSlot9, #firstCardSlot10, #secondCardSlot10 {
-    height: 20%;
-    width: 20%;
-}
-#dealerSlot1, #dealerSlot2, #dealerSlot3, #dealerSlot4, #dealerSlot5,
-#dealerSlot6, #dealerSlot7, #dealerSlot8, #dealerSlot9 {
-    color: red;
-}
-#combinationSlot1, #combinationSlot2, #combinationSlot3, #combinationSlot4,
-#combinationSlot5, #combinationSlot6, #combinationSlot7, #combinationSlot8,
-#combinationSlot9, #combinationSlot10 {
-    color: white;
 }

@@ -6,9 +6,12 @@ import { data } from './main.js';
 
 export const game = (socket, handCards) => {
     UI.lobbyElement.style.display = 'none';
+
     UI.slotsArea.style.display = 'grid';
+
     UI.controlPanel.style.display = 'flex';
     document.body.style.backgroundImage = "url('../images/backgrounds/green-background.jpg')";
+
     socket.addEventListener('message', (event) => {
         const message = JSON.parse(event.data);
         gameServerHandler(socket, message, handCards);
