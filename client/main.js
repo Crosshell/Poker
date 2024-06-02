@@ -1,13 +1,12 @@
 'use strict';
 
 import { HOST, PORT } from '../src/constants/constants.js';
-import { get, UI, changeReadiness } from './ui.js';
+import { get, UI } from './ui.js';
 import { initializeLobbySlots, initializePlayerSlots } from './slotsInitializer.js'
 import { lobbyServerHandler } from './socketHandlers.js';
 
 export const data = {
     yourID: 0,
-    isYouReady: false,
     currentTurnUserID: 0
 }
 
@@ -38,7 +37,7 @@ const connectToLobby = (username) => {
         });
 
         UI.readyButton.addEventListener('click', () => {
-            changeReadiness(socket);
+            socket.send(JSON.stringify({ type: 'changeReadiness' }));
         });
     });
 }

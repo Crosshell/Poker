@@ -1,13 +1,14 @@
 'use strict';
 
 import { WebSocket, WebSocketServer } from 'ws';
-import { handleConnection, handleMessage, handleClose } from './handlers.js';
+import { handleMessage, handleClose } from './handlers.js';
 import { PORT } from '../src/constants/constants.js';
+import { checkConnectionError } from "./lobbyUtils.js";
 
 const wss = new WebSocketServer({ port: PORT });
 
 wss.on('connection', (ws) => {
-    handleConnection(ws);
+    checkConnectionError(ws);
 
     ws.on('message', (message) => {
         handleMessage(ws, message);

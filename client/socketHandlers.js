@@ -12,8 +12,10 @@ import { game, makeMove, gameOverByFold, gameOver } from './gameManager.js';
 
 export const lobbyServerHandler = (socket, message) => {
     const handlers = {
-        'getID': (content) => { data.yourID = content; },
-        'successfulConnect': () => { showLobby(); },
+        'successfulConnect': (content) => {
+            data.yourID = content.userID;
+            showLobby();
+        },
         'newConnect': (content) => { updateConnectedUsers(content); },
         'updateReadiness': (content) => { updateReadiness(content); },
         'userLobbyDisconnected': (content) => {

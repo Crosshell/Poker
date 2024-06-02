@@ -41,16 +41,16 @@ export const updateConnectedUsers = (connectedUsers) => {
 
 export const updateReadiness = (content) => {
     const [ isUserReady, userID, username ] = [ content.isReady, content.userID, content.username ];
-
+    if (userID === data.yourID) {
+        changeReadyButton(content.isReady);
+    }
     const userLobbyElement = get('lobbySlot' + userID);
     const readiness = isUserReady ? 'Ready' : 'Not Ready';
     userLobbyElement.textContent = username + ': ' + readiness;
 }
 
-export const changeReadiness = (socket) => {
-    data.isYouReady = !data.isYouReady;
-    socket.send(JSON.stringify({ type: 'readiness', content: data.isYouReady }));
-    if (data.isYouReady) {
+const changeReadyButton = (ready) => {
+    if (ready) {
         UI.readyButton.style.backgroundColor = '#1df817';
         UI.readyButton.style.boxShadow = '0 5px 5px #29731c, 0 9px 0 #14a81b, 0 9px 10px rgba(0,0,0,0.4), inset 0 2px 9px rgba(255,255,255,0.2), inset 0 -2px 9px rgba(0,0,0,0.2)';
         UI.readyButton.style.borderBottom = '1px solid rgba(68, 241, 36, 0.2)';

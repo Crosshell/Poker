@@ -1,29 +1,11 @@
 'use strict';
 
-import { getNextUserID, isConnectionError, sendIdToNewUser, sendNewConnect,
-         sendReadyStatusToNewUser, isAllReady, validateUsername
-} from './lobbyUtils.js';
-
+import { isAllReady, validateUsername, connectUser } from './lobbyUtils.js';
 import { broadcast, removeConnection } from './utils.js';
 import { startGame } from './game.js';
 import { users, gameState } from './state.js';
-import { User } from '../src/models/user.js';
 import { MIN_PLAYERS } from '../src/constants/constants.js';
 import { updatePlayerTurn, findLastPlayerStanding, processPlayerAction, proceedToNextStreet } from './gameUtils.js';
-
-export const handleConnection = (ws) => {
-    const userID = getNextUserID();
-
-    if (isConnectionError(ws, userID)) {
-        return;
-    }
-
-    users[userID] = new User(userID, ws);
-
-    sendIdToNewUser(users[userID]);
-    sendNewConnect();
-    sendReadyStatusToNewUser();
-}
 
 export const handleMessage = (ws, message) => {
     const parsedMessage = JSON.parse(message);
@@ -40,15 +22,15 @@ export const handleClose = (ws) => {
 
 const handleMassageType = (type, content, ws) => {
     const user = Object.values(users).find(user => user.ws === ws);
-    if (!user) return;
 
     switch (type) {
         case 'clientUsername':
-            validateUsername(content, ws, user);
-            handleReadiness(user.isReady, user.id, user.username);
+            if (validateUsername(content, ws)){
+                connectUser(content, ws);
+            }
             break;
-        case 'readiness':
-            handleReadiness(content, user.id, user.username);
+        case 'changeReadiness':
+            handleReadiness(user);
             break;
         case 'playerMove':
             handleGameRound(content.action, content.amount, user.id);
@@ -58,9 +40,9 @@ const handleMassageType = (type, content, ws) => {
     }
 }
 
-const handleReadiness = (isReady, userID, username) => {
-    users[userID].isReady = isReady;
-    broadcast(JSON.stringify({ type: 'updateReadiness', content: { isReady: isReady, userID: userID, username: username } }));
+const handleReadiness = (user) => {
+    users[user.id].isReady = !users[user.id].isReady;
+    broadcast(JSON.stringify({ type: 'updateReadiness', content: { isReady: user.isReady, userID: user.id, username: user.username } }));
     if (Object.keys(users).length >= MIN_PLAYERS && isAllReady()) {
         startGame();
     }
