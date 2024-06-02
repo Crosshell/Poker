@@ -7,11 +7,9 @@ import { User } from '../src/models/user.js';
 
 export const checkConnectionError = (ws) => {
     if (gameState.isGameStarted) {
-        ws.send(JSON.stringify({ type: 'error', content: 'The game has already started' }));
-        ws.close();
+        ws.close(1000, 'The game has already started');
     } else if (Object.keys(users).length >= MAX_PLAYERS) {
-        ws.send(JSON.stringify({ type: 'error', content: 'Max players reached' }));
-        ws.close();
+        ws.close(1000, 'Max players reached');
     }
 }
 
@@ -20,8 +18,7 @@ export const validateUsername = (username, ws) => {
     if (stringUsername.length >= 4 && stringUsername.length <= 10) {
         return true;
     }
-    ws.send(JSON.stringify({ type: 'error', content: 'Invalid username. Username must be 4 to 10 characters.' }));
-    ws.close();
+    ws.close(1000, 'Invalid username. Username must be 4 to 10 characters.');
     return false;
 }
 

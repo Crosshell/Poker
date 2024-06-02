@@ -26,7 +26,7 @@ wss.on('connection', (ws) => {
 export const closeServer = () => {
     for (const client of wss.clients) {
         if (client.readyState === WebSocket.OPEN) {
-            client.close();
+            client.close(1000, 'Server closed');
         }
     }
     console.log('Server closed');

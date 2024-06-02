@@ -1,7 +1,7 @@
 'use strict';
 
 import { HOST, PORT } from '../src/constants/constants.js';
-import { get, UI } from './ui.js';
+import { get, UI, displayMessage } from './ui.js';
 import { initializeLobbySlots, initializePlayerSlots } from './slotsInitializer.js'
 import { lobbyServerHandler } from './socketHandlers.js';
 
@@ -38,6 +38,10 @@ const connectToLobby = (username) => {
 
         UI.readyButton.addEventListener('click', () => {
             socket.send(JSON.stringify({ type: 'changeReadiness' }));
+        });
+
+        socket.addEventListener('close', (event) => {
+            displayMessage('Socket close: ' + event.reason);
         });
     });
 }

@@ -23,7 +23,6 @@ export const lobbyServerHandler = (socket, message) => {
             disconnectedUserElement.style.display = 'none';
         },
         'getHandCards': (content) => { game(socket, content); },
-        'error': (content) => { displayMessage(content); },
     };
 
     if (handlers[message.type]) {

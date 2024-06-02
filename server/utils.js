@@ -1,7 +1,7 @@
 'use strict';
 
 import { users, gameState } from './state.js';
-import {proceedToNextStreet, updatePlayerTurn} from './gameUtils.js'
+import { proceedToNextStreet, updatePlayerTurn } from './gameUtils.js'
 
 export const broadcast = (message) => {
     for (const user of Object.values(users)) {
