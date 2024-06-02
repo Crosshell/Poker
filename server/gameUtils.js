@@ -51,47 +51,47 @@ export const sendUpdateBank = () => {
 }
 
 export const setDealer = () => {
-    const usersID = Object.keys(users);
-    const randomUserID = usersID[Math.floor(Math.random() * usersID.length)];
-    gameState.dealerId = randomUserID;
-    broadcast(JSON.stringify({ type: 'setDealer', content: randomUserID }))
+    const usersId = Object.keys(users);
+    const randomUserId = usersId[Math.floor(Math.random() * usersId.length)];
+    gameState.dealerId = randomUserId;
+    broadcast(JSON.stringify({ type: 'setDealer', content: randomUserId }))
 }
 
 export const doBlinds = () => {
-    const usersID = Object.keys(users).map(Number);
-    const dealerIndex = usersID.indexOf(Number(gameState.dealerId));
+    const usersId = Object.keys(users).map(Number);
+    const dealerIndex = usersId.indexOf(Number(gameState.dealerId));
 
-    const smallBlindIndex = (dealerIndex + 1) % usersID.length;
-    const bigBlindIndex = (dealerIndex + 2) % usersID.length;
-    const firstMoveIndex = (dealerIndex + 3) % usersID.length;
+    const smallBlindIndex = (dealerIndex + 1) % usersId.length;
+    const bigBlindIndex = (dealerIndex + 2) % usersId.length;
+    const firstMoveIndex = (dealerIndex + 3) % usersId.length;
 
-    applyBlind(usersID[smallBlindIndex], SMALL_BLIND);
-    applyBlind(usersID[bigBlindIndex], BIG_BLIND);
+    applyBlind(usersId[smallBlindIndex], SMALL_BLIND);
+    applyBlind(usersId[bigBlindIndex], BIG_BLIND);
 
-    gameState.queue = usersID.slice(firstMoveIndex).concat(usersID.slice(0, firstMoveIndex));
+    gameState.queue = usersId.slice(firstMoveIndex).concat(usersId.slice(0, firstMoveIndex));
 }
 
-const applyBlind = (userID, amount) => {
-    users[userID].money -= amount;
-    users[userID].bid += amount;
+const applyBlind = (userId, amount) => {
+    users[userId].money -= amount;
+    users[userId].bid += amount;
 }
 
 export const updatePlayerTurn = () => {
     if (gameState.queue.length === 0 || findLastPlayerStanding()) return;
-    const currentUserID = gameState.queue[0];
-    const message = JSON.stringify({ type: 'turn', content: [ currentUserID, users[currentUserID].username] });
+    const currentUserId = gameState.queue[0];
+    const message = JSON.stringify({ type: 'turn', content: [ currentUserId, users[currentUserId].username] });
     broadcast(message)
 }
 
 export const findLastPlayerStanding = () => {
-    const activeUsers = Object.keys(users).filter(userID => !users[userID].hasFolded);
+    const activeUsers = Object.keys(users).filter(id => !users[id].hasFolded);
     if (activeUsers.length === 1) {
-        const winnerID = activeUsers[0];
-        users[winnerID].money += gameState.bank;
+        const winnerId = activeUsers[0];
+        users[winnerId].money += gameState.bank;
         gameState.bank = 0;
         sendUpdateMoney();
         sendUpdateBank();
-        broadcast(JSON.stringify({ type: 'gameOverByFold', content: [ winnerID, users[winnerID].cards,  users[winnerID].username ] }));
+        broadcast(JSON.stringify({ type: 'gameOverByFold', content: [ winnerId, users[winnerId].cards,  users[winnerId].username ] }));
         closeServer();
         return true;
     }
@@ -99,15 +99,15 @@ export const findLastPlayerStanding = () => {
 }
 
 export const processPlayerAction = (action, amount) => {
-    const currentUserID = gameState.queue.shift();
+    const currentUserId = gameState.queue.shift();
 
     if (action === 'fold') {
-        users[currentUserID].hasFolded = true;
-        broadcast(JSON.stringify({ type: 'foldedUser', content: [ currentUserID, users[currentUserID].username ] }));
+        users[currentUserId].hasFolded = true;
+        broadcast(JSON.stringify({ type: 'foldedUser', content: [ currentUserId, users[currentUserId].username ] }));
     } else if (action === 'call') {
-        callBet(currentUserID);
+        callBet(currentUserId);
     } else if (action === 'bet') {
-        if (!placeBet(currentUserID, amount)) return null;
+        if (!placeBet(currentUserId, amount)) return null;
     } else {
         return null;
     }
@@ -118,44 +118,44 @@ export const processPlayerAction = (action, amount) => {
     sendUpdateBank();
 }
 
-const callBet = (currentUserID) => {
-    const callAmount = gameState.highestBid - users[currentUserID].bid;
-    if (users[currentUserID].money < callAmount) {
-        users[currentUserID].bid += users[currentUserID].money;
-        users[currentUserID].money = 0;
+const callBet = (currentUserId) => {
+    const callAmount = gameState.highestBid - users[currentUserId].bid;
+    if (users[currentUserId].money < callAmount) {
+        users[currentUserId].bid += users[currentUserId].money;
+        users[currentUserId].money = 0;
     } else {
-        users[currentUserID].money -= callAmount;
-        users[currentUserID].bid += callAmount;
+        users[currentUserId].money -= callAmount;
+        users[currentUserId].bid += callAmount;
     }
 }
 
-const placeBet = (currentUserID, amount) => {
-    if (users[currentUserID].money < amount){
+const placeBet = (currentUserId, amount) => {
+    if (users[currentUserId].money < amount){
         const message = JSON.stringify({ type: 'betError', content: 'The bet must be less than the amount of your money' });
-        users[currentUserID].ws.send(message);
-        gameState.queue.unshift(currentUserID);
+        users[currentUserId].ws.send(message);
+        gameState.queue.unshift(currentUserId);
         updatePlayerTurn();
         return false;
     }
-    if (amount + users[currentUserID].bid <= gameState.highestBid) {
+    if (amount + users[currentUserId].bid <= gameState.highestBid) {
         const message = JSON.stringify({ type: 'betError', content: 'The bid must be greater than the current highest bid' });
-        users[currentUserID].ws.send(message);
-        gameState.queue.unshift(currentUserID);
+        users[currentUserId].ws.send(message);
+        gameState.queue.unshift(currentUserId);
         updatePlayerTurn();
         return false;
     }
-    gameState.highestBid = amount + users[currentUserID].bid;
-    users[currentUserID].money -= amount;
-    users[currentUserID].bid += amount;
-    resetQueue(currentUserID);
+    gameState.highestBid = amount + users[currentUserId].bid;
+    users[currentUserId].money -= amount;
+    users[currentUserId].bid += amount;
+    resetQueue(currentUserId);
     return true;
 }
 
-const resetQueue = (currentUserID) => {
-    const usersID = Object.keys(users).map(Number);
-    gameState.queue = usersID
-        .slice(currentUserID)
-        .concat(usersID.slice(0, currentUserID))
+const resetQueue = (currentUserId) => {
+    const usersId = Object.keys(users).map(Number);
+    gameState.queue = usersId
+        .slice(currentUserId)
+        .concat(usersId.slice(0, currentUserId))
         .filter(id => !users[id].hasFolded);
 }
 
@@ -176,20 +176,20 @@ export const proceedToNextStreet = () => {
 }
 
 const resetQueueToDealerLeft = () => {
-    const usersID = Object.keys(users).map(Number);
-    const leftPlayerFromDealerID = getLeftPlayerFromDealer(usersID);
-    gameState.queue = usersID
-        .slice(leftPlayerFromDealerID)
-        .concat(usersID.slice(0, leftPlayerFromDealerID))
+    const usersId = Object.keys(users).map(Number);
+    const leftPlayerFromDealerId = getLeftPlayerFromDealer(usersId);
+    gameState.queue = usersId
+        .slice(leftPlayerFromDealerId)
+        .concat(usersId.slice(0, leftPlayerFromDealerId))
         .filter(id => !users[id].hasFolded);
 }
 
-const getLeftPlayerFromDealer = (usersID) => {
-    const dealerIndex = usersID.indexOf(Number(gameState.dealerId));
-    let leftPlayerFromDealerIndex = (dealerIndex + 1) % usersID.length;
+const getLeftPlayerFromDealer = (usersId) => {
+    const dealerIndex = usersId.indexOf(Number(gameState.dealerId));
+    let leftPlayerFromDealerIndex = (dealerIndex + 1) % usersId.length;
 
-    while (users[usersID[leftPlayerFromDealerIndex]].hasFolded) {
-        leftPlayerFromDealerIndex = (leftPlayerFromDealerIndex + 1) % usersID.length;
+    while (users[usersId[leftPlayerFromDealerIndex]].hasFolded) {
+        leftPlayerFromDealerIndex = (leftPlayerFromDealerIndex + 1) % usersId.length;
     }
     return leftPlayerFromDealerIndex;
 }

@@ -4,37 +4,37 @@ import { COMBINATIONS, FIRST_CARD_CHECK, RANKS } from "../constants/constants.js
 
 const kickerCardWinner = (users, winners) => {
     let highestRankIndex = 0;
-    for (const winnerID of winners){
-        const currentRankIndex = RANKS.indexOf(users[winnerID].cards[0].rank);
+    for (const winnerId of winners){
+        const currentRankIndex = RANKS.indexOf(users[winnerId].cards[0].rank);
         if (currentRankIndex > highestRankIndex){
             highestRankIndex = currentRankIndex;
         }
     }
 
-    winners = winners.filter(winnerID => RANKS.indexOf(users[winnerID].cards[0].rank) === highestRankIndex);
+    winners = winners.filter(winnerId => RANKS.indexOf(users[winnerId].cards[0].rank) === highestRankIndex);
 
     if (winners.length > 1){
         highestRankIndex = 0;
-        for (const winnerID of winners){
-            const currentRankIndex = RANKS.indexOf(users[winnerID].cards[1].rank);
+        for (const winnerId of winners){
+            const currentRankIndex = RANKS.indexOf(users[winnerId].cards[1].rank);
             if (currentRankIndex > highestRankIndex){
                 highestRankIndex = currentRankIndex;
             }
         }
-        winners = winners.filter(winnerID => RANKS.indexOf(users[winnerID].cards[1].rank) === highestRankIndex);
+        winners = winners.filter(winnerId => RANKS.indexOf(users[winnerId].cards[1].rank) === highestRankIndex);
     }
     return winners;
 }
 
 const getWinnersByNumCard = (users, winners, num) => {
     let highestRankIndex = 0;
-    for (const winnerID of winners) {
-        const currentRankIndex = RANKS.indexOf(users[winnerID].combination.cards[num].rank);
+    for (const winnerId of winners) {
+        const currentRankIndex = RANKS.indexOf(users[winnerId].combination.cards[num].rank);
         if (currentRankIndex > highestRankIndex) {
             highestRankIndex = currentRankIndex;
         }
     }
-    winners = winners.filter(winnerID => RANKS.indexOf(users[winnerID].combination.cards[num].rank) === highestRankIndex);
+    winners = winners.filter(winnerId => RANKS.indexOf(users[winnerId].combination.cards[num].rank) === highestRankIndex);
     return winners;
 }
 

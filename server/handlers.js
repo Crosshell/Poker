@@ -42,14 +42,14 @@ const handleMassageType = (type, content, ws) => {
 
 const handleReadiness = (user) => {
     users[user.id].isReady = !users[user.id].isReady;
-    broadcast(JSON.stringify({ type: 'updateReadiness', content: { isReady: user.isReady, userID: user.id, username: user.username } }));
+    broadcast(JSON.stringify({ type: 'updateReadiness', content: { isReady: user.isReady, userId: user.id, username: user.username } }));
     if (Object.keys(users).length >= MIN_PLAYERS && isAllReady()) {
         startGame();
     }
 }
 
-const handleGameRound = (action, amount, userID) => {
-    if (userID !== gameState.queue[0]) return;
+const handleGameRound = (action, amount, userId) => {
+    if (userId !== gameState.queue[0]) return;
 
     if (findLastPlayerStanding()) return;
     const result = processPlayerAction(action, amount);

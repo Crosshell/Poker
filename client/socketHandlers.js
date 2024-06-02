@@ -13,7 +13,7 @@ import { game, makeMove, gameOverByFold, gameOver } from './gameManager.js';
 export const lobbyServerHandler = (socket, message) => {
     const handlers = {
         'successfulConnect': (content) => {
-            data.yourID = content.userID;
+            data.yourId = content;
             showLobby();
         },
         'newConnect': (content) => { updateConnectedUsers(content); },
@@ -42,7 +42,7 @@ export const gameServerHandler = (socket, message, handCards) => {
         'setDealer': (content) => { updateDealer(content); },
         'turn': (content) => {
             updateTurnUser(content);
-            if (content[0] === data.yourID) makeMove(socket);
+            if (content[0] === data.yourId) makeMove(socket);
         },
         'betError': (content) => { displayMessage(content); },
         'foldedUser': (content) => { updateFoldedUsers(content); },

@@ -27,18 +27,18 @@ export const isAllReady = () => {
 }
 
 export const connectUser = (username, ws) => {
-    const userID = getNextUserID();
+    const userId = getNextUserId();
 
-    users[userID] = new User(userID, ws);
+    users[userId] = new User(userId, ws);
 
-    users[userID].username = username;
+    users[userId].username = username;
 
-    ws.send(JSON.stringify({ type: 'successfulConnect', content: { userID: userID } }));
+    ws.send(JSON.stringify({ type: 'successfulConnect', content: userId }));
     sendNewConnect();
     sendReadyStatusToNewUser();
 }
 
-const getNextUserID = () => {
+const getNextUserId = () => {
     for (let i = 1; i <= MAX_PLAYERS; i++) {
         if (!users[i]) {
             return i;
@@ -53,6 +53,6 @@ const sendNewConnect = () => {
 
 const sendReadyStatusToNewUser = () => {
     for (const user of Object.values(users)) {
-        broadcast(JSON.stringify({ type: 'updateReadiness', content: { isReady: user.isReady, userID: user.id, username: user.username } }));
+        broadcast(JSON.stringify({ type: 'updateReadiness', content: { isReady: user.isReady, userId: user.id, username: user.username } }));
     }
 }

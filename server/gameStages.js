@@ -41,22 +41,22 @@ export const showdown = () => {
         }
     }
 
-    let winnersID = checkWinner(notFoldedUsers);
-    const dividedMoney = Math.floor(gameState.bank / winnersID.length);
+    let winnersId = checkWinner(notFoldedUsers);
+    const dividedMoney = Math.floor(gameState.bank / winnersId.length);
 
-    for (const winnerID of winnersID) {
-        users[winnerID].money += dividedMoney;
+    for (const winnerId of winnersId) {
+        users[winnerId].money += dividedMoney;
     }
 
     gameState.bank = 0;
     sendUpdateMoney();
     sendUpdateBank();
 
-    const winnersUsernames = winnersID.map(winnerID => users[winnerID].username);
+    const winnersUsernames = winnersId.map(winnerId => users[winnerId].username);
 
     const message = JSON.stringify({
         type: 'gameOver',
-        content: [ winnersID, usersCombination, usersCards, winnersUsernames ]
+        content: [ winnersId, usersCombination, usersCards, winnersUsernames ]
     });
     broadcast(message);
     closeServer();

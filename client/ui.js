@@ -33,18 +33,18 @@ export const showLobby = () => {
 }
 
 export const updateConnectedUsers = (connectedUsers) => {
-    for (const userID of connectedUsers) {
-        const connectedUserElement = get('lobbySlot' + userID);
+    for (const userId of connectedUsers) {
+        const connectedUserElement = get('lobbySlot' + userId);
         connectedUserElement.style.display = 'flex';
     }
 }
 
 export const updateReadiness = (content) => {
-    const [ isUserReady, userID, username ] = [ content.isReady, content.userID, content.username ];
-    if (userID === data.yourID) {
+    const [ isUserReady, userId, username ] = [ content.isReady, content.userId, content.username ];
+    if (userId === data.yourId) {
         changeReadyButton(content.isReady);
     }
-    const userLobbyElement = get('lobbySlot' + userID);
+    const userLobbyElement = get('lobbySlot' + userId);
     const readiness = isUserReady ? 'Ready' : 'Not Ready';
     userLobbyElement.textContent = username + ': ' + readiness;
 }
@@ -71,23 +71,23 @@ export const showPlayers = (users) => {
 }
 
 export const showYourHandCards = (handCards) => {
-    const firstHandCardElement = get('firstCardSlot' + data.yourID);
-    const secondHandCardElement = get('secondCardSlot' + data.yourID);
+    const firstHandCardElement = get('firstCardSlot' + data.yourId);
+    const secondHandCardElement = get('secondCardSlot' + data.yourId);
     firstHandCardElement.src = handCards[0].image;
     secondHandCardElement.src = handCards[1].image;
 }
 
 export const updateUsersMoney = (usersMoney) => {
-    for (const userID in usersMoney) {
-        const userMoneyElement = get('moneySlot' + userID);
-        userMoneyElement.textContent = 'Money: $' + usersMoney[userID];
+    for (const userId in usersMoney) {
+        const userMoneyElement = get('moneySlot' + userId);
+        userMoneyElement.textContent = 'Money: $' + usersMoney[userId];
     }
 }
 
 export const updateUsersBid = (usersBid) => {
-    for (const userID in usersBid) {
-        const userBidElement = get('bidSlot' + userID);
-        userBidElement.textContent = 'Bid: $' + usersBid[userID];
+    for (const userId in usersBid) {
+        const userBidElement = get('bidSlot' + userId);
+        userBidElement.textContent = 'Bid: $' + usersBid[userId];
     }
 }
 
@@ -101,31 +101,31 @@ export const updateDealer = (dealer) => {
 }
 
 export const updateTurnUser = (content) => {
-    const [ turnUserID, turnUsername ] = content;
-    if (data.currentTurnUserID) {
-        const previousGameUserElement = get('gameSlot' + data.currentTurnUserID);
+    const [ turnUserId, turnUsername ] = content;
+    if (data.currentTurnUserId) {
+        const previousGameUserElement = get('gameSlot' + data.currentTurnUserId);
         previousGameUserElement.style.background = '';
     }
 
-    const gameUserElement = get('gameSlot' + turnUserID);
+    const gameUserElement = get('gameSlot' + turnUserId);
     gameUserElement.style.background = 'rgba(24,255,0,0.29)';
     UI.turnNotifyElement.textContent = turnUsername + '\'s turn';
     UI.turnNotifyElement.style.color = 'white';
-    data.currentTurnUserID = turnUserID;
+    data.currentTurnUserId = turnUserId;
 }
 
 export const updateFoldedUsers = (content) => {
-    const [ foldedUserID, foldedUsername ] = content;
+    const [ foldedUserId, foldedUsername ] = content;
 
     displayMessage(foldedUsername + ' has folded');
-    const foldedUserElement = get('gameSlot' + foldedUserID);
+    const foldedUserElement = get('gameSlot' + foldedUserId);
     foldedUserElement.style.color = 'rgba(255,0,0,0.94)';
 }
 
 export const updateDisconnectedUser = (content) => {
-    const [ disconnectedUserID, disconnectedUsername ] = content;
+    const [ disconnectedUserId, disconnectedUsername ] = content;
     displayMessage(disconnectedUsername + ' disconnected')
-    const disconnectedUserElement = get('gameSlot' + disconnectedUserID);
+    const disconnectedUserElement = get('gameSlot' + disconnectedUserId);
     disconnectedUserElement.style.color = 'rgba(255,0,0,0.94)';
 }
 

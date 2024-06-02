@@ -50,15 +50,15 @@ export const makeMove = (socket) => {
 }
 
 export const gameOverByFold = (content) => {
-    const [ winnerID, winnerCards, winnerUsername ] = content;
+    const [ winnerId, winnerCards, winnerUsername ] = content;
 
-    const currentTurnUSerElement = get('gameSlot' + data.currentTurnUserID);
-    currentTurnUSerElement.style.background = '';
+    const currentTurnUserElement = get('gameSlot' + data.currentTurnUserId);
+    currentTurnUserElement.style.background = '';
 
-    const winnerElement = get('gameSlot' + winnerID);
+    const winnerElement = get('gameSlot' + winnerId);
     winnerElement.style.background = 'rgba(255,242,0,0.33)';
-    const winnerFirstCardElement = get('firstCardSlot' + winnerID);
-    const winnerSecondCardElement = get('secondCardSlot' + winnerID);
+    const winnerFirstCardElement = get('firstCardSlot' + winnerId);
+    const winnerSecondCardElement = get('secondCardSlot' + winnerId);
 
     winnerFirstCardElement.src = winnerCards[0].image;
     winnerSecondCardElement.src = winnerCards[1].image;
@@ -66,23 +66,23 @@ export const gameOverByFold = (content) => {
 }
 
 export const gameOver = (content) => {
-    const [ winnersID, usersCombinations, usersCards, winnersUsername ] = content;
+    const [ winnersId, usersCombinations, usersCards, winnersUsername ] = content;
 
-    const currentTurnUSerElement = get('gameSlot' + data.currentTurnUserID);
+    const currentTurnUSerElement = get('gameSlot' + data.currentTurnUserId);
     currentTurnUSerElement.style.background = '';
 
-    for (const winnerID of winnersID) {
-        const winnerElement = get('gameSlot' + winnerID);
+    for (const winnerId of winnersId) {
+        const winnerElement = get('gameSlot' + winnerId);
         winnerElement.style.background = 'rgba(255,242,0,0.33)';
     }
 
-    for (const userID in usersCards) {
-        const combinationElement = get('combinationSlot' + userID);
-        const firstHandCardElement = get('firstCardSlot' + userID);
-        const secondHandCardElement = get('secondCardSlot' + userID);
-        combinationElement.textContent = usersCombinations[userID].name;
-        firstHandCardElement.src = usersCards[userID][0].image;
-        secondHandCardElement.src = usersCards[userID][1].image;
+    for (const userId in usersCards) {
+        const combinationElement = get('combinationSlot' + userId);
+        const firstHandCardElement = get('firstCardSlot' + userId);
+        const secondHandCardElement = get('secondCardSlot' + userId);
+        combinationElement.textContent = usersCombinations[userId].name;
+        firstHandCardElement.src = usersCards[userId][0].image;
+        secondHandCardElement.src = usersCards[userId][1].image;
     }
-    displayMessage(`WINNER IS ${winnersUsername} with ${usersCombinations[winnersID[0]].name}`);
+    displayMessage(`WINNER IS ${winnersUsername} with ${usersCombinations[winnersId[0]].name}`);
 }

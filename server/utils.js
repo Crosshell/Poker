@@ -9,11 +9,11 @@ export const broadcast = (message) => {
     }
 }
 
-export const removeConnection = (userID) => {
+export const removeConnection = (userId) => {
     if (gameState.isGameStarted) {
-        users[userID].hasFolded = true;
-        broadcast(JSON.stringify({ type: 'userGameDisconnected', content: [ userID, users[userID].username ] }));
-        const index = gameState.queue.indexOf(userID);
+        users[userId].hasFolded = true;
+        broadcast(JSON.stringify({ type: 'userGameDisconnected', content: [ userId, users[userId].username ] }));
+        const index = gameState.queue.indexOf(userId);
         if (index !== -1) {
             gameState.queue.splice(index, 1);
         }
@@ -22,8 +22,8 @@ export const removeConnection = (userID) => {
         } else {
             updatePlayerTurn();
         }
-    } else if (users[userID]) {
-        delete users[userID];
-        broadcast(JSON.stringify({ type: 'userLobbyDisconnected', content: userID }));
+    } else if (users[userId]) {
+        delete users[userId];
+        broadcast(JSON.stringify({ type: 'userLobbyDisconnected', content: userId }));
     }
 }

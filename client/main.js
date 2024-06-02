@@ -6,8 +6,8 @@ import { initializeLobbySlots, initializePlayerSlots } from './slotsInitializer.
 import { lobbyServerHandler } from './socketHandlers.js';
 
 export const data = {
-    yourID: 0,
-    currentTurnUserID: 0
+    yourId: 0,
+    currentTurnUserId: 0
 }
 
 document.addEventListener('DOMContentLoaded', () => {
