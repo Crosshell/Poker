@@ -1,7 +1,7 @@
 'use strict';
 
 import { users, gameState } from './state.js';
-import { updatePlayerTurn } from './gameUtils.js'
+import {proceedToNextStreet, updatePlayerTurn} from './gameUtils.js'
 
 export const broadcast = (message) => {
     for (const user of Object.values(users)) {
@@ -17,7 +17,11 @@ export const removeConnection = (userID) => {
         if (index !== -1) {
             gameState.queue.splice(index, 1);
         }
-        updatePlayerTurn();
+        if (gameState.queue.length === 0) {
+            proceedToNextStreet();
+        } else {
+            updatePlayerTurn();
+        }
     } else if (users[userID]) {
         delete users[userID];
         broadcast(JSON.stringify({ type: 'userLobbyDisconnected', content: userID }));
