@@ -3,7 +3,7 @@
 import { users, gameState } from './state.js';
 import { broadcast } from './utils.js';
 import { BIG_BLIND, SMALL_BLIND, STREETS } from '../src/constants/constants.js';
-import { sendFlopCards, sendTurnCard, sendRiverCard, showdown } from './gameStages.js';
+import { dealTableCards, showdown } from './gameStages.js';
 import { closeServer } from './server.js';
 
 export const dealCardsToUsers = () => {
@@ -78,9 +78,9 @@ const applyBlind = (userId, amount) => {
 
 export const updatePlayerTurn = () => {
     if (gameState.queue.length === 0 || findLastPlayerStanding()) return;
+
     const currentUserId = gameState.queue[0];
-    const message = JSON.stringify({ type: 'turn', content: [ currentUserId, users[currentUserId].username] });
-    broadcast(message)
+    broadcast(JSON.stringify({ type: 'turn', content: [ currentUserId, users[currentUserId].username] }))
 }
 
 export const findLastPlayerStanding = () => {
@@ -129,25 +129,23 @@ const callBet = (currentUserId) => {
     }
 }
 
-const placeBet = (currentUserId, amount) => {
-    if (users[currentUserId].money < amount){
-        const message = JSON.stringify({ type: 'betError', content: 'The bet must be less than the amount of your money' });
-        users[currentUserId].ws.send(message);
-        gameState.queue.unshift(currentUserId);
+const placeBet = (userId, amount) => {
+    if (users[userId].money < amount){
+        users[userId].ws.send(JSON.stringify({ type: 'betError', content: 'The bet must be less than the amount of your money' }));
+        gameState.queue.unshift(userId);
         updatePlayerTurn();
         return false;
     }
-    if (amount + users[currentUserId].bid <= gameState.highestBid) {
-        const message = JSON.stringify({ type: 'betError', content: 'The bid must be greater than the current highest bid' });
-        users[currentUserId].ws.send(message);
-        gameState.queue.unshift(currentUserId);
+    if (amount + users[userId].bid <= gameState.highestBid) {
+        users[userId].ws.send(JSON.stringify({ type: 'betError', content: 'The bid must be greater than the current highest bid' }));
+        gameState.queue.unshift(userId);
         updatePlayerTurn();
         return false;
     }
-    gameState.highestBid = amount + users[currentUserId].bid;
-    users[currentUserId].money -= amount;
-    users[currentUserId].bid += amount;
-    resetQueue(currentUserId);
+    gameState.highestBid = amount + users[userId].bid;
+    users[userId].money -= amount;
+    users[userId].bid += amount;
+    resetQueue(userId);
     return true;
 }
 
@@ -168,11 +166,10 @@ export const proceedToNextStreet = () => {
         showdown();
     } else {
         updatePlayerTurn();
+        if (gameState.currentStreet === 'Flop') dealTableCards(3);
+        if (gameState.currentStreet === 'Turn') dealTableCards(1);
+        if (gameState.currentStreet === 'River') dealTableCards(1);
     }
-
-    if (!gameState.isFlopCardsSent && gameState.currentStreet === 'Flop') sendFlopCards();
-    if (!gameState.isTurnCardSent && gameState.currentStreet === 'Turn') sendTurnCard();
-    if (!gameState.isRiverCardSent && gameState.currentStreet === 'River') sendRiverCard();
 }
 
 const resetQueueToDealerLeft = () => {

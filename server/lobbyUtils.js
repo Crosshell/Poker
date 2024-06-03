@@ -28,14 +28,16 @@ export const isAllReady = () => {
 
 export const connectUser = (username, ws) => {
     const userId = getNextUserId();
+    if (userId === null) {
+        ws.close(1000, 'Unable to assign user ID');
+        return;
+    }
 
     users[userId] = new User(userId, ws);
-
     users[userId].username = username;
 
     ws.send(JSON.stringify({ type: 'successfulConnect', content: userId }));
-    sendNewConnect();
-    sendReadyStatusToNewUser();
+    broadcastUserStatus();
 }
 
 const getNextUserId = () => {
@@ -47,11 +49,8 @@ const getNextUserId = () => {
     return null;
 }
 
-const sendNewConnect = () => {
+const broadcastUserStatus = () => {
     broadcast(JSON.stringify({ type: 'newConnect', content: Object.keys(users) }));
-}
-
-const sendReadyStatusToNewUser = () => {
     for (const user of Object.values(users)) {
         broadcast(JSON.stringify({ type: 'updateReadiness', content: { isReady: user.isReady, userId: user.id, username: user.username } }));
     }

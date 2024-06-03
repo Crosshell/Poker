@@ -1,6 +1,8 @@
 'use strict';
 
-import { COMBINATIONS, FIRST_CARD_CHECK, RANKS } from "../constants/constants.js";
+import { COMBINATIONS, RANKS } from "../constants/constants.js";
+
+const FIRST_CARD_CHECK = ['Pair', 'Three of a kind', 'Straight', 'Four of a kind', 'Straight flush'];
 
 const kickerCardWinner = (users, winners) => {
     let highestRankIndex = 0;

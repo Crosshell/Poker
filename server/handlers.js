@@ -56,10 +56,8 @@ const handleGameRound = (action, amount, userId) => {
 
     if (result === null) return;
 
-    const activeUsers = Object.keys(users).filter(id => !users[id].hasFolded);
-    const allBidsEqual = activeUsers.every(id => users[id].bid === gameState.highestBid);
 
-    if (allBidsEqual && gameState.queue.length === 0) {
+    if (gameState.queue.length === 0) {
         proceedToNextStreet();
     } else {
         updatePlayerTurn();

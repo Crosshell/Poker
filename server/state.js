@@ -14,7 +14,4 @@ export let gameState = {
     highestBid: BIG_BLIND,
     dealerId: 0,
     currentStreet: STREETS[0],
-    isFlopCardsSent: false,
-    isTurnCardSent: false,
-    isRiverCardSent: false
 };
