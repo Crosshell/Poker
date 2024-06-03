@@ -137,7 +137,22 @@ export const updateTable = (tableCards) => {
     UI.riverCardElement.src = tableCards[4].image;
 }
 
+const messageQueue = [];
+let isDisplayingMessage = false;
+
 export const displayMessage = (message) => {
+    messageQueue.push(message);
+    processQueue();
+}
+
+const processQueue  = () => {
+    if (isDisplayingMessage || messageQueue.length === 0) {
+        return;
+    }
+
+    isDisplayingMessage = true;
+    const message = messageQueue.shift();
+
     let toast = document.createElement('div');
     toast.innerText = message;
     toast.style.position = 'fixed';
@@ -148,6 +163,12 @@ export const displayMessage = (message) => {
     toast.style.color = '#fff';
     toast.style.padding = '10px 20px';
     toast.style.borderRadius = '5px';
+    toast.style.zIndex = '1000';
+
     document.body.appendChild(toast);
-    setTimeout(() => document.body.removeChild(toast), 3000);
+    setTimeout(() => {
+        document.body.removeChild(toast);
+        isDisplayingMessage = false;
+        processQueue();
+    }, 3000);
 }
