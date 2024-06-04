@@ -3,7 +3,7 @@
 import { WebSocket, WebSocketServer } from 'ws';
 import { handleMessage, handleClose } from './handlers.js';
 import { PORT } from '../src/constants/constants.js';
-import { checkConnectionError } from "./lobbyUtils.js";
+import { checkConnectionError } from './lobbyUtils.js';
 
 const wss = new WebSocketServer({ port: PORT });
 

@@ -51,7 +51,7 @@ export const sendUpdateBank = () => {
 }
 
 export const setDealer = () => {
-    const usersId = Object.keys(users);
+    const usersId = Object.keys(users).map(Number);
     const randomUserId = usersId[Math.floor(Math.random() * usersId.length)];
     gameState.dealerId = randomUserId;
     broadcast(JSON.stringify({ type: 'setDealer', content: randomUserId }))
@@ -59,16 +59,15 @@ export const setDealer = () => {
 
 export const doBlinds = () => {
     const usersId = Object.keys(users).map(Number);
-    const dealerIndex = usersId.indexOf(Number(gameState.dealerId));
+    const dealerIndex = usersId.indexOf(gameState.dealerId);
 
     const smallBlindIndex = (dealerIndex + 1) % usersId.length;
     const bigBlindIndex = (dealerIndex + 2) % usersId.length;
-    const firstMoveIndex = (dealerIndex + 3) % usersId.length;
 
     applyBlind(usersId[smallBlindIndex], SMALL_BLIND);
     applyBlind(usersId[bigBlindIndex], BIG_BLIND);
 
-    gameState.queue = usersId.slice(firstMoveIndex).concat(usersId.slice(0, firstMoveIndex));
+    resetQueueFromUser(usersId[bigBlindIndex]);
 }
 
 const applyBlind = (userId, amount) => {
@@ -118,14 +117,14 @@ export const processPlayerAction = (action, amount) => {
     sendUpdateBank();
 }
 
-const callBet = (currentUserId) => {
-    const callAmount = gameState.highestBid - users[currentUserId].bid;
-    if (users[currentUserId].money < callAmount) {
-        users[currentUserId].bid += users[currentUserId].money;
-        users[currentUserId].money = 0;
+const callBet = (userId) => {
+    const callAmount = gameState.highestBid - users[userId].bid;
+    if (users[userId].money < callAmount) {
+        users[userId].bid += users[userId].money;
+        users[userId].money = 0;
     } else {
-        users[currentUserId].money -= callAmount;
-        users[currentUserId].bid += callAmount;
+        users[userId].money -= callAmount;
+        users[userId].bid += callAmount;
     }
 }
 
@@ -145,22 +144,16 @@ const placeBet = (userId, amount) => {
     gameState.highestBid = amount + users[userId].bid;
     users[userId].money -= amount;
     users[userId].bid += amount;
-    resetQueue(userId);
-    return true;
-}
 
-const resetQueue = (currentUserId) => {
-    const usersId = Object.keys(users).map(Number);
-    gameState.queue = usersId
-        .slice(currentUserId)
-        .concat(usersId.slice(0, currentUserId))
-        .filter(id => !users[id].hasFolded);
+    resetQueueFromUser(userId);
+    return true;
 }
 
 export const proceedToNextStreet = () => {
     const currentIndex = STREETS.indexOf(gameState.currentStreet);
     gameState.currentStreet = STREETS[currentIndex + 1];
-    resetQueueToDealerLeft();
+
+    resetQueueFromUser(gameState.dealerId);
 
     if (gameState.currentStreet === 'Showdown') {
         showdown();
@@ -172,21 +165,11 @@ export const proceedToNextStreet = () => {
     }
 }
 
-const resetQueueToDealerLeft = () => {
+const resetQueueFromUser = (UserId) => {
     const usersId = Object.keys(users).map(Number);
-    const leftPlayerFromDealerId = getLeftPlayerFromDealer(usersId);
+    const nextUserIndex = (usersId.indexOf(UserId) + 1) % usersId.length;
     gameState.queue = usersId
-        .slice(leftPlayerFromDealerId)
-        .concat(usersId.slice(0, leftPlayerFromDealerId))
+        .slice(nextUserIndex)
+        .concat(usersId.slice(0, nextUserIndex))
         .filter(id => !users[id].hasFolded);
-}
-
-const getLeftPlayerFromDealer = (usersId) => {
-    const dealerIndex = usersId.indexOf(Number(gameState.dealerId));
-    let leftPlayerFromDealerIndex = (dealerIndex + 1) % usersId.length;
-
-    while (users[usersId[leftPlayerFromDealerIndex]].hasFolded) {
-        leftPlayerFromDealerIndex = (leftPlayerFromDealerIndex + 1) % usersId.length;
-    }
-    return leftPlayerFromDealerIndex;
 }

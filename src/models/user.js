@@ -1,3 +1,5 @@
+'use strict';
+
 import { START_MONEY } from "../constants/constants.js";
 
 export class User {
