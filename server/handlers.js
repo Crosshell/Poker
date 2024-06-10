@@ -56,7 +56,6 @@ const handleGameRound = (action, amount, userId) => {
 
     if (result === null) return;
 
-
     if (gameState.queue.length === 0) {
         proceedToNextStreet();
     } else {

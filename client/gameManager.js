@@ -22,26 +22,22 @@ export const makeMove = (socket) => {
     UI.turnNotifyElement.textContent = 'Your turn';
     UI.turnNotifyElement.style.color = 'red';
 
-    const handleCall = () => {
-        socket.send(JSON.stringify({ type: 'playerMove', content: { action: 'call' } }));
-        removeButtonListeners();
-    };
-
-    const handleFold = () => {
-        socket.send(JSON.stringify({ type: 'playerMove', content: { action: 'fold' } }));
-        removeButtonListeners();
-    };
-
+    const handleCall = () => handlePlayerMove(socket, 'call');
+    const handleFold = () => handlePlayerMove(socket, 'fold');
     const handleBet = () => {
         const bet = prompt('Enter bet: ');
-        socket.send(JSON.stringify({ type: 'playerMove', content: { action: 'bet', amount: parseInt(bet) } }));
-        removeButtonListeners();
-    }
+        handlePlayerMove(socket, 'bet', parseInt(bet));
+    };
 
     const removeButtonListeners = () => {
         UI.callButton.removeEventListener('click', handleCall);
         UI.foldButton.removeEventListener('click', handleFold);
         UI.betButton.removeEventListener('click', handleBet);
+    };
+
+    const handlePlayerMove = (socket, action, amount = null) => {
+        socket.send(JSON.stringify({ type: 'playerMove', content: { action, amount } }));
+        removeButtonListeners();
     };
 
     UI.callButton.addEventListener('click', handleCall);
