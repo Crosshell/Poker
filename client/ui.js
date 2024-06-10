@@ -155,15 +155,7 @@ const processQueue  = () => {
 
     let toast = document.createElement('div');
     toast.innerText = message;
-    toast.style.position = 'fixed';
-    toast.style.bottom = '10px';
-    toast.style.left = '50%';
-    toast.style.transform = 'translateX(-50%)';
-    toast.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-    toast.style.color = '#fff';
-    toast.style.padding = '10px 20px';
-    toast.style.borderRadius = '5px';
-    toast.style.zIndex = '1000';
+    toast.className = 'toast-message';
 
     document.body.appendChild(toast);
     setTimeout(() => {
